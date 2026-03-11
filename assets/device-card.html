@@ -1,0 +1,110 @@
+<template id="device-card-template">
+  <div class="card card-device">
+    <div class="card-body">
+      <h5 class="card-title"></h5>
+      <p class="card-text"><em class="card-text-content"></em></p>
+      <p><strong class="device-status"></strong></p>
+    </div>
+  </div>
+  <div class="mt-1"></div>
+  <div class="collapse my-1 integration-collapse">
+    <div class="card card-body bg-light">
+      <div class="mb-2">
+        <label>IP / MAC:</label>
+        <input type="text" class="form-control form-control-sm integration-ip" value="${device.integration?.ip || ''}">
+      </div>
+      <div class="mb-2">
+        <label>Протокол:</label>
+        <select class="form-select form-select-sm integration-protocol">
+          <option value="">Вибрати...</option>
+          <option value="MQTT">MQTT</option>
+          <option value="HTTP">HTTP</option>
+          <option value="WebSocket">WebSocket</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label>Device ID:</label>
+        <input type="text" class="form-control form-control-sm integration-deviceId" value="${device.integration?.deviceId || ''}">
+      </div>
+      <div class="mb-2">
+        <label>API Key / Token:</label>
+        <input type="text" class="form-control form-control-sm integration-apiKey" value="${device.integration?.apiKey || ''}">
+      </div>
+      <button class="btn btn-success btn-sm save-integration">Зберегти</button>
+    </div>
+  </div>
+  <div class="card-device-out__btn-group d-flex gap-1 mt-1 w-100">
+    <button class="card-device-out__btn btn btn-sm btn-success flex-fill toggle-btn">
+    </button>
+    <button class="card-device-out__btn btn btn-sm btn-danger flex-fill remove-btn">
+      Видалити
+    </button>
+    <button class="card-device-out__btn btn btn-sm btn-secondary flex-fill integration-btn" 
+            data-bs-toggle="collapse"
+            data-bs-target="#${integrationId}"
+            aria-expanded="false"
+            aria-controls="${integrationId}"
+            title="Інтеграція в систему через IP, MQTT, HTTP або WebSocket">
+      Інтеграція
+    </button>
+  </div>
+</template>
+
+<!--
+div.innerHTML = `
+  <div class="card card-device">
+    <div class="card-body">
+      <h5 class="card-title">${getDeviceDisplayName(device.type)} ${device.extendedName || ''}</h5>
+      <p class="card-text"><em>${device.location}</em></p>
+      <p><strong>[${device.getStatus()}]</strong></p>
+    </div>
+  </div>
+  <div class="mt-1"></div>
+  <div class="collapse my-1" id="${integrationId}">
+    <div class="card card-body bg-light">
+      <div class="mb-2">
+        <label>IP / MAC:</label>
+        <input type="text" class="form-control form-control-sm integration-ip" value="${device.integration?.ip || ''}">
+      </div>
+      <div class="mb-2">
+        <label>Протокол:</label>
+        <select class="form-select form-select-sm integration-protocol">
+          <option value="">Вибрати...</option>
+          <option value="MQTT" ${device.integration?.protocol === 'MQTT' ? 'selected' : ''}>MQTT</option>
+          <option value="HTTP" ${device.integration?.protocol === 'HTTP' ? 'selected' : ''}>HTTP</option>
+          <option value="WebSocket" ${device.integration?.protocol === 'WebSocket' ? 'selected' : ''}>WebSocket</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label>Device ID:</label>
+        <input type="text" class="form-control form-control-sm integration-deviceId" value="${device.integration?.deviceId || ''}">
+      </div>
+      <div class="mb-2">
+        <label>API Key / Token:</label>
+        <input type="text" class="form-control form-control-sm integration-apiKey" value="${device.integration?.apiKey || ''}">
+      </div>
+      <button class="btn btn-success btn-sm save-integration">Зберегти</button>
+    </div>
+  </div>
+  <div class="card-device-out__btn-group d-flex gap-1 mt-1 w-100">
+    <button class="card-device-out__btn btn btn-sm btn-success flex-fill"
+            onclick="home.devices.find(d => d.id === ${device.id}).toggle(); renderDevices();"
+            title="Увімкнути/Вимкнути цей пристрій">
+      ${device.isOn ? "Вимкнути" : "Увімкнути"}
+    </button>
+    <button class="card-device-out__btn btn btn-sm btn-danger flex-fill"
+            onclick="home.removeDevice(${device.id}); renderDevices();"
+            title="Видалити цей пристрій з системи">
+      Видалити
+    </button>
+    <button class="card-device-out__btn btn btn-sm btn-secondary flex-fill" 
+            data-bs-toggle="collapse"
+            data-bs-target="#${integrationId}"
+            aria-expanded="false"
+            aria-controls="${integrationId}"
+            title="Інтеграція в систему через IP, MQTT, HTTP або WebSocket">
+      Інтеграція
+    </button>
+  </div>
+`;
+-->

@@ -10,6 +10,10 @@ body {
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
+.card-device:hover {
+  transform: translateY(-5px);
+}
+
 .card-device strong {
   font-size: 1.1rem;
 }
@@ -17,4 +21,23 @@ body {
 .card-device button {
   margin-right: 0.5rem;
   margin-top: 0.3rem;
+}
+
+.card-device__btn-group {
+  width: 100%;
+}
+
+.card-specific__btn {
+  min-width: 0;
+}
+
+.card-device-out__btn-group {
+  width: 100%;
+}
+
+
+
+.badge__volume {
+  min-width: 40px;
+  text-align: center;
 }

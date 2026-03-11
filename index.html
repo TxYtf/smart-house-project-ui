@@ -83,6 +83,58 @@
 
       <!-- Список доданих компонентів -->
       <h2 class="mb-3">Компоненти</h2>
+
+      <template id="device-card-template">
+        <div class="card card-device">
+          <div class="card-body">
+            <h5 class="card-title"></h5>
+            <p class="card-text"><em class="card-text-content"></em></p>
+            <p><strong class="device-status"></strong></p>
+          </div>
+          <div class="specific-buttons p-2 border-top"></div>
+        </div>
+        <div class="mt-1"></div>
+        <div class="collapse my-1 integration-collapse">
+          <div class="card card-body bg-light">
+            <div class="mb-2">
+              <label>IP / MAC:</label>
+              <input type="text" class="form-control form-control-sm integration-ip">
+            </div>
+            <div class="mb-2">
+              <label>Протокол:</label>
+              <select class="form-select form-select-sm integration-protocol">
+                <option value="WebSocket">WebSocket</option>
+                <option value="MQTT">MQTT</option>
+                <option value="HTTP">HTTP</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label>Device ID:</label>
+              <input type="text" class="form-control form-control-sm integration-deviceId">
+            </div>
+            <div class="mb-2">
+              <label>API Key / Token:</label>
+              <input type="text" class="form-control form-control-sm integration-apiKey">
+            </div>
+            <button class="btn btn-success btn-sm save-integration">Зберегти</button>
+          </div>
+        </div>
+
+        <div class="card-device-out__btn-group d-flex gap-1 mt-1">
+          <button class="card-device-out__btn btn btn-sm btn-success flex-fill toggle-btn">
+          </button>
+          <button class="card-device-out__btn btn btn-sm btn-danger flex-fill remove-btn">
+            Видалити
+          </button>
+          <button class="card-device-out__btn btn btn-sm btn-secondary flex-fill integration-btn" 
+                  data-bs-toggle="collapse"
+                  aria-expanded="false"
+                  title="Інтеграція в систему через IP, MQTT, HTTP або WebSocket">
+            Інтеграція
+          </button>
+        </div>
+      </template>
+
       <div id="devicesContainer" class="row g-3"></div>
     </div>
 

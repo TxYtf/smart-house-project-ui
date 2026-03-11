@@ -109,7 +109,6 @@ const devices = [
 ];
 
 
-
 class Device {
   static nextId = 1;
   constructor(name, extendedName, type, location) {
@@ -136,7 +135,16 @@ class Device {
   }
 }
 
-class Light extends Device {}
+class Light extends Device {
+  constructor(name, extendedName, location) {
+    super(name, extendedName, "Light", location);
+    this.volume = 100;
+  }
+  setVolume(vol) { this.volume = vol; }
+  getStatus() {
+    return this.isOn ? `Увімкнено, яскравість: ${this.volume}` : "Вимкнено";
+  }
+}
 
 class HeatingBoiler extends Device {}
 
@@ -156,9 +164,9 @@ class TV extends Device {
   }
   nextChannel() { this.channel = (this.channel % this.channels.length) + 1; }
   prevChannel() { this.channel = (this.channel - 2 + this.channels.length) % this.channels.length + 1; }
-  setVolume(v) { this.volume = v; }
+  setVolume(vol) { this.volume = vol; }
   getStatus() {
-    return this.isOn ? `Увімкнено, канал: ${this.channel}, гучність: ${this.volume}` : "Вимкнено";
+    return this.isOn ? `Увімкнено, канал: ${this.channels[this.channel-1]}, гучність: ${this.volume}` : "Вимкнено";
   }
 }
 
@@ -224,82 +232,170 @@ function renderDevices() {
     const div = document.createElement("div");
     div.className = "col-lg-4 col-md-6 col-12"; // три картки в ряд
 
+    const template = document.getElementById('device-card-template');
+    const card = template.content.cloneNode(true);
+
     // Унікальний id для collapse
     const integrationId = `integration-${device.id}`;
 
-    div.innerHTML = `
-      <div class="card card-device">
-        <div class="card-body">
-          <h5 class="card-title">${getDeviceDisplayName(device.type)} ${device.extendedName || ''}</h5>
-          <p class="card-text"><em>${device.location}</em></p>
-          <p><strong>[${device.getStatus()}]</strong></p>
-        </div>
-      </div>
-      <div class="mt-1"></div>
-      <div class="collapse my-1" id="${integrationId}">
-        <div class="card card-body bg-light">
-          <div class="mb-2">
-            <label>IP / MAC:</label>
-            <input type="text" class="form-control form-control-sm integration-ip" value="${device.integration?.ip || ''}">
-          </div>
-          <div class="mb-2">
-            <label>Протокол:</label>
-            <select class="form-select form-select-sm integration-protocol">
-              <option value="">Вибрати...</option>
-              <option value="MQTT" ${device.integration?.protocol === 'MQTT' ? 'selected' : ''}>MQTT</option>
-              <option value="HTTP" ${device.integration?.protocol === 'HTTP' ? 'selected' : ''}>HTTP</option>
-              <option value="WebSocket" ${device.integration?.protocol === 'WebSocket' ? 'selected' : ''}>WebSocket</option>
-            </select>
-          </div>
-          <div class="mb-2">
-            <label>Device ID:</label>
-            <input type="text" class="form-control form-control-sm integration-deviceId" value="${device.integration?.deviceId || ''}">
-          </div>
-          <div class="mb-2">
-            <label>API Key / Token:</label>
-            <input type="text" class="form-control form-control-sm integration-apiKey" value="${device.integration?.apiKey || ''}">
-          </div>
-          <button class="btn btn-success btn-sm save-integration">Зберегти</button>
-        </div>
-      </div>
-    `;
-
-    const btnContainer = document.createElement("div");
-    btnContainer.className = "d-flex gap-1 mt-1 w-100"; // d-flex робить рядок, gap-1 додає відступи між кнопками
-    btnContainer.style.width = "100%"; // ширина контейнера = ширині картки
-
-    // Додаємо кнопки
-    const toggleBtn = document.createElement("button");
-    toggleBtn.className = "btn btn-sm btn-success flex-fill"; // flex-fill = займає рівну частину контейнера
-    toggleBtn.style.minWidth = "0";
-    toggleBtn.textContent = device.isOn ? "Вимкнути" : "Увімкнути";
-    toggleBtn.onclick = () => { device.toggle(); renderDevices(); };
-
-    const removeBtn = document.createElement("button");
-    removeBtn.className = "btn btn-sm btn-danger flex-fill";
-    removeBtn.style.minWidth = "0";
-    removeBtn.textContent = "Видалити";
-    removeBtn.onclick = () => { home.removeDevice(device.id); renderDevices(); };
-
-    const integrationBtn = document.createElement("button");
-    integrationBtn.className = "btn btn-sm btn-secondary flex-fill";
-    integrationBtn.style.minWidth = "0";
-    integrationBtn.textContent = "Інтеграція";
-    integrationBtn.setAttribute("data-bs-toggle", "collapse");
-    integrationBtn.setAttribute("data-bs-target", `#${integrationId}`);
-    integrationBtn.setAttribute("aria-expanded", "false");
-    integrationBtn.setAttribute("aria-controls", integrationId);
+    // Заповнюємо дані в шаблону
+    card.querySelector('.card-title').textContent = 
+      `${getDeviceDisplayName(device.type)} ${device.extendedName || ''}`;
     
-    // Додаємо контейнер під картку
-    div.appendChild(btnContainer);
+    card.querySelector('.card-text-content').textContent = device.location;
+    
+    card.querySelector('.device-status').textContent = `[${device.getStatus()}]`;
+    
+    // Установлюємо ID для collapse
+    const collapseDiv = card.querySelector('.integration-collapse');
+    collapseDiv.id = integrationId;
 
-    btnContainer.appendChild(toggleBtn);
-    btnContainer.appendChild(removeBtn);
-    btnContainer.appendChild(integrationBtn);
+    // Заповнюємо поля інтеграції
+    card.querySelector('.integration-ip').value = device.integration?.ip || '';
+    card.querySelector('.integration-protocol').value = device.integration?.protocol || '';
+    card.querySelector('.integration-deviceId').value = device.integration?.deviceId || '';
+    card.querySelector('.integration-apiKey').value = device.integration?.apiKey || '';
+    
+    // Кнопка Toggle (Увімкнути/Вимкнути)
+    const toggleBtn = card.querySelector('.toggle-btn');
+    toggleBtn.textContent = device.isOn ? "Вимкнути" : "Увімкнути";
+    toggleBtn.title = "Увімкнути/Вимкнути цей пристрій";
+    toggleBtn.addEventListener("click", () => {
+      home.devices.find(d => d.id === device.id).toggle();
+      renderDevices();
+    });
+    
+    // Кнопка Remove (Видалити)
+    const removeBtn = card.querySelector('.remove-btn');
+    removeBtn.title = "Видалити цей пристрій з системи";
+    removeBtn.addEventListener("click", () => {
+      home.removeDevice(device.id);
+      renderDevices();
+    });
+    
+    // Кнопка Integration (Інтеграція)
+    const integrationBtn = card.querySelector('.integration-btn');
+    integrationBtn.setAttribute('data-bs-target', `#${integrationId}`);
+    integrationBtn.setAttribute('aria-controls', `${integrationId}`);
+    integrationBtn.title = "Інтеграція в систему через IP, MQTT, HTTP або WebSocket";
 
-    // div.querySelector(".card-body").appendChild(toggleBtn);
-    // div.querySelector(".card-body").appendChild(removeBtn);
-    // div.querySelector(".card-body").appendChild(integrationBtn);
+    // Регулятор освітлення для Light
+    if (device instanceof Light) {
+      // Контейнер для регулятора яскравості
+      const brightnessContainer = document.createElement("div");
+      brightnessContainer.className = "d-flex align-items-center gap-1 mt-2";
+
+      const brightnessLabel = document.createElement("label");
+      brightnessLabel.textContent = "Яскравість:";
+      brightnessLabel.className = "form-label mb-0";
+      
+      const brightnessSlider = document.createElement("input");
+      brightnessSlider.type = "range";
+      brightnessSlider.className = "form-range flex-grow-1";
+      brightnessSlider.min = "0";
+      brightnessSlider.max = "100";
+      brightnessSlider.value = device.volume;
+      
+      const brightnessDisplay = document.createElement("span");
+      brightnessDisplay.textContent = device.volume;
+      brightnessDisplay.className = "badge bg-secondary badge__volume";
+      
+      brightnessSlider.addEventListener("input", () => {
+        device.setVolume(parseInt(brightnessSlider.value));
+        brightnessDisplay.textContent = device.volume;
+        // Оновлення статусу світильника в картці
+        div.querySelector('.device-status').textContent = `[${device.getStatus()}]`;
+      });
+      
+      brightnessContainer.appendChild(brightnessLabel);
+      brightnessContainer.appendChild(brightnessSlider);
+      brightnessContainer.appendChild(brightnessDisplay);
+      
+      card.querySelector('.specific-buttons').appendChild(brightnessContainer);
+    }
+
+    // Спеціальні кнопки для WindowBlind
+    if (device instanceof WindowBlind) {
+      const openBtn = document.createElement("button");
+      openBtn.textContent = "Відкрити";
+      openBtn.className = "btn btn-sm btn-info mt-2";
+      openBtn.addEventListener("click", () => {
+        device.open();
+        renderDevices();
+      });
+      
+      const closeBtn = document.createElement("button");
+      closeBtn.textContent = "Закрити";
+      closeBtn.className = "btn btn-sm btn-info mt-2 ms-1";
+      closeBtn.addEventListener("click", () => {
+        device.close();
+        renderDevices();
+      });
+      
+      card.querySelector('.specific-buttons').appendChild(openBtn);
+      card.querySelector('.specific-buttons').appendChild(closeBtn);
+    }
+
+    // Спеціальні кнопки для TV
+    if (device instanceof TV) {
+      const prevBtn = document.createElement("button");
+      prevBtn.textContent = "Попередній канал";
+      prevBtn.className = "btn btn-sm btn-warning mt-2 card-specific__btn";
+      prevBtn.addEventListener("click", () => {
+        device.prevChannel();
+        renderDevices();
+      });
+      
+      const nextBtn = document.createElement("button");
+      nextBtn.textContent = "Наступний канал";
+      nextBtn.className = "btn btn-sm btn-warning mt-2 ms-1 card-specific__btn";
+      nextBtn.addEventListener("click", () => {
+        device.nextChannel();
+        renderDevices();
+      });
+      
+      // Контейнер для кнопок каналів
+      const channelBtnsContainer = document.createElement("div");
+      channelBtnsContainer.className = "mb-2 d-flex card-device__btn-group";
+      channelBtnsContainer.appendChild(prevBtn);
+      channelBtnsContainer.appendChild(nextBtn);
+      
+      // Контейнер для регулятора звуку
+      const volumeContainer = document.createElement("div");
+      volumeContainer.className = "d-flex align-items-center gap-1";
+      
+      const volumeLabel = document.createElement("label");
+      volumeLabel.textContent = "Гучність:";
+      volumeLabel.className = "form-label mb-0";
+      
+      const volumeSlider = document.createElement("input");
+      volumeSlider.type = "range";
+      volumeSlider.className = "form-range flex-grow-1";
+      volumeSlider.min = "0";
+      volumeSlider.max = "100";
+      volumeSlider.value = device.volume;
+      
+      const volumeDisplay = document.createElement("span");
+      volumeDisplay.textContent = device.volume;
+      volumeDisplay.className = "badge bg-secondary badge__volume";
+      
+      volumeSlider.addEventListener("input", () => {
+        device.setVolume(parseInt(volumeSlider.value));
+        volumeDisplay.textContent = device.volume;
+        // Оновлення статусу телевізора в картці
+        div.querySelector('.device-status').textContent = `[${device.getStatus()}]`;
+      });
+      
+      volumeContainer.appendChild(volumeLabel);
+      volumeContainer.appendChild(volumeSlider);
+      volumeContainer.appendChild(volumeDisplay);
+      
+      card.querySelector('.specific-buttons').appendChild(channelBtnsContainer);
+      card.querySelector('.specific-buttons').appendChild(volumeContainer);
+    }
+
+    // Додаємо всю картку до div
+    div.appendChild(card);
 
     // Обробник кнопки "Зберегти" інтеграцію
     const saveBtn = div.querySelector(".save-integration");
@@ -311,32 +407,7 @@ function renderDevices() {
       alert(`Інтеграційні налаштування для "${device.name}" збережено.`);
     });
 
-    if (device instanceof WindowBlind) {
-      const openBtn = document.createElement("button");
-      openBtn.textContent = "Відкрити";
-      openBtn.onclick = () => { device.open(); renderDevices(); };
-      
-      const closeBtn = document.createElement("button");
-      closeBtn.textContent = "Закрити";
-      closeBtn.onclick = () => { device.close(); renderDevices(); };
-
-      div.appendChild(openBtn);
-      div.appendChild(closeBtn);
-    }
-
-    if (device instanceof TV) {
-      const nextBtn = document.createElement("button");
-      nextBtn.textContent = "Наступний канал";
-      nextBtn.onclick = () => { device.nextChannel(); renderDevices(); };
-
-      const prevBtn = document.createElement("button");
-      prevBtn.textContent = "Попередній канал";
-      prevBtn.onclick = () => { device.prevChannel(); renderDevices(); };
-
-      div.appendChild(prevBtn);
-      div.appendChild(nextBtn);
-    }
-
+    // Додаємо картку до контейнера
     devicesContainer.appendChild(div);
   });
 }
@@ -356,8 +427,7 @@ document.getElementById("addDeviceBtn").onclick = () => {
   //if (!name) return alert("Вкажіть назву пристрою");
   
   let device;
-  // if (type.toLowerCase() === "tv") device = new TV(name, location);
-  // else device = new Device(name, type, location);
+
   switch(type) {
     case "Light": device = new Light(name, extendedName, type, location); break;
     case "HeatingBoiler": device = new HeatingBoiler(name, extendedName, type, location); break;
