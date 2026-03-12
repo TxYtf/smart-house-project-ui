@@ -108,15 +108,26 @@ const devices = [
     location: ["Двір"]}
 ];
 
-
+// Базовий клас пристрою
 class Device {
   static nextId = 1;
+
+  static deviceClasses = [];
+  static registerClass(cls) {
+    this.deviceClasses.push(cls);
+    return cls;
+  }
+  static getClassForType(type) {
+    return this.deviceClasses.find(cls => cls.name === type) || Device;
+  }
+
   constructor(name, extendedName, type, location) {
     this.id = Device.nextId++;
     this.name = name;
     this.extendedName = extendedName;
     this.type = type;
     this.location = location;
+    this.volumeRegulator = null; // Чи має пристрій регулятор гучності/яскравості
     this.isOn = false;
 
     // Налаштування інтеграції
@@ -131,51 +142,119 @@ class Device {
     this.isOn = !this.isOn;
   }
   getStatus() {
-    return this.isOn ? "Увімкнено" : "Вимкнено";
+    return this.isOn ? "On" : "Off";
   }
 }
 
-class Light extends Device {
-  constructor(name, extendedName, location) {
-    super(name, extendedName, "Light", location);
-    this.volume = 100;
+// Приклад розширеного компонента Світильник з регулятором яскравості
+const Light = Device.registerClass(
+  class Light extends Device {
+    constructor(name, extendedName, location) {
+      super(name, extendedName, "Light", location);
+      this.volumeRegulator = {
+        name: "Яскравість:",
+        type: "brightness",
+        volume: 100, // 0 - вимкнено, 100 - максимально яскраво
+        volumeMax: 100
+      };
+    }
+    setVolume(vol) { this.volumeRegulator.volume = vol; }
+    getStatus() {
+      return this.isOn ? `ON, яскравість: ${this.volumeRegulator.volume}` : "OFF";
+    }
   }
-  setVolume(vol) { this.volume = vol; }
-  getStatus() {
-    return this.isOn ? `Увімкнено, яскравість: ${this.volume}` : "Вимкнено";
+);
+
+// Приклад розширеного компонента Котел опалення з регулятором рівня опалення
+const HeatingBoiler = Device.registerClass(
+  class HeatingBoiler extends Device {
+    constructor(name, extendedName, location) {
+      super(name, extendedName, "HeatingBoiler", location);
+      this.volumeRegulator = {
+        name: "Рівень опалення:",
+        type: "heatingLevel",
+        volume: 0, // 0 - вимкнено, 100 - максимальний рівень
+        volumeMax: 100
+      };
+    }
+    setVolume(vol) { this.volumeRegulator.volume = vol; }
+    getStatus() {
+      return this.isOn ? `ON, рівень опалення: ${this.volumeRegulator.volume}` : "OFF";
+    }
   }
-}
+);
 
-class HeatingBoiler extends Device {}
-
-class WindowBlind extends Device {
-  open() { this.isOn = true; }
-  close() { this.isOn = false; }
-  getStatus() { return this.isOn ? "Відкрито" : "Закрито"; }
-}
+// Приклад розширеного компонента Жалюзі з регулятором відкриття
+const WindowBlind = Device.registerClass(
+  class WindowBlind extends Device {
+    constructor(name, extendedName, location) {
+      super(name, extendedName, "WindowBlind", location);
+      this.volumeRegulator = {
+        name: "Відкриття:",
+        type: "openingLevel",
+        volume: 0, // 0 - закрито, 100 - відкрито
+        volumeMax: 100
+      };
+      this.isDown = true; // чи опущені жалюзі
+    }
+    setVolume(vol) { this.volumeRegulator.volume = vol; }
+    setDown(state) {
+      this.isDown = state;
+    }
+    getStatus() {
+      let openVolume = "";
+      if (this.isDown) {
+        if (this.volumeRegulator.volume === 100) {
+          openVolume = "повністю відкриті";
+        } else if (this.volumeRegulator.volume === 0) {
+          openVolume = "повністю закриті";
+        } else {
+          openVolume = `відкриті на ${this.volumeRegulator.volume}%`;
+        }
+      }
+      return this.isOn ? `ON, ${this.isDown ? "опущені, " : "підняті"}${openVolume}` : "OFF";
+    }
+  }
+);
 
 // Приклад розширеного компонента TV
-class TV extends Device {
-  constructor(name, extendedName, location) {
-    super(name, extendedName, "TV", location);
-    this.channel = 1;
-    this.volume = 10;
-    this.channels = ["1. News", "2. Sports", "3. Movies"];
+const TV = Device.registerClass(
+  class TV extends Device {
+    constructor(name, extendedName, location) {
+      super(name, extendedName, "TV", location);
+      this.channel = 1;
+      this.channels = ["1. News", "2. Sports", "3. Movies"];
+      this.volumeRegulator = {
+        name: "Гучність:",
+        type: "volumeLevel",
+        volume: 10, // 0 - вимкнено, 100 - максимально гучно
+        volumeMax: 100,
+        muted: false
+      };
+    }
+    nextChannel() { this.channel = (this.channel % this.channels.length) + 1; }
+    prevChannel() { this.channel = (this.channel - 2 + this.channels.length) % this.channels.length + 1; }
+    setVolume(vol) { this.volumeRegulator.volume = vol; }
+    toggleMute() {
+      this.volumeRegulator.muted = !this.volumeRegulator.muted;
+    }
+    getStatus() {
+      let volumeStatus = this.volumeRegulator.muted ? "Muted" : this.volumeRegulator.volume;
+      return this.isOn ? `ON, ch: ${this.channels[this.channel-1]}, гучність: ${volumeStatus}` : "OFF";
+    }
   }
-  nextChannel() { this.channel = (this.channel % this.channels.length) + 1; }
-  prevChannel() { this.channel = (this.channel - 2 + this.channels.length) % this.channels.length + 1; }
-  setVolume(vol) { this.volume = vol; }
-  getStatus() {
-    return this.isOn ? `Увімкнено, канал: ${this.channels[this.channel-1]}, гучність: ${this.volume}` : "Вимкнено";
-  }
-}
+);
 
 class SmartHome {
   constructor() { this.devices = []; }
   addDevice(device) { this.devices.push(device); }
-  removeDevice(id) { this.devices = this.devices.filter(d => d.id !== id);
+  removeDevice(id) { this.devices = this.devices.filter(d => d.id !== id); }
 }
-}
+
+const deviceConstructors = Device.deviceClasses.reduce((acc, cls) => {
+  acc[cls.name] = cls;
+  return acc;
+}, {});
 
 const home = new SmartHome();
 const devicesContainer = document.getElementById("devicesContainer");
@@ -194,6 +273,7 @@ function renderLocations() {
   });
 }
 
+// Рендеримо пристрої, дозволені для вибраної локації
 function renderDevicesByLocation(selectedLocation) {
   deviceSelect.disabled = !selectedLocation;
   deviceSelect.innerHTML = "";
@@ -221,11 +301,7 @@ function renderDevicesByLocation(selectedLocation) {
   });
 }
 
-function getDeviceDisplayName(type) {
-  const template = devices.find(d => d.type === type);
-  return template ? template.name : type;
-}
-
+// Рендеримо картки пристроїв
 function renderDevices() {
   devicesContainer.innerHTML = "";
   home.devices.forEach(device => {
@@ -238,9 +314,10 @@ function renderDevices() {
     // Унікальний id для collapse
     const integrationId = `integration-${device.id}`;
 
-    // Заповнюємо дані в шаблону
+    // Заповнюємо дані в шаблоні
+    const currentDevice = devices.find(dev => dev.type === device.type);
     card.querySelector('.card-title').textContent = 
-      `${getDeviceDisplayName(device.type)} ${device.extendedName || ''}`;
+      `${currentDevice ? currentDevice.name : device.type} ${device.extendedName || ''}`;
     
     card.querySelector('.card-text-content').textContent = device.location;
     
@@ -259,7 +336,6 @@ function renderDevices() {
     // Кнопка Toggle (Увімкнути/Вимкнути)
     const toggleBtn = card.querySelector('.toggle-btn');
     toggleBtn.textContent = device.isOn ? "Вимкнути" : "Увімкнути";
-    toggleBtn.title = "Увімкнути/Вимкнути цей пристрій";
     toggleBtn.addEventListener("click", () => {
       home.devices.find(d => d.id === device.id).toggle();
       renderDevices();
@@ -267,7 +343,6 @@ function renderDevices() {
     
     // Кнопка Remove (Видалити)
     const removeBtn = card.querySelector('.remove-btn');
-    removeBtn.title = "Видалити цей пристрій з системи";
     removeBtn.addEventListener("click", () => {
       home.removeDevice(device.id);
       renderDevices();
@@ -277,58 +352,63 @@ function renderDevices() {
     const integrationBtn = card.querySelector('.integration-btn');
     integrationBtn.setAttribute('data-bs-target', `#${integrationId}`);
     integrationBtn.setAttribute('aria-controls', `${integrationId}`);
-    integrationBtn.title = "Інтеграція в систему через IP, MQTT, HTTP або WebSocket";
 
-    // Регулятор освітлення для Light
-    if (device instanceof Light) {
-      // Контейнер для регулятора яскравості
-      const brightnessContainer = document.createElement("div");
-      brightnessContainer.className = "d-flex align-items-center gap-1 mt-2";
+    // Унікальний регулятор для пристроїв з підтримкою регулятора
+    const regulatorWrapper = card.querySelector('.volume-regulator-wrapper');
+    const regulatorLabel = card.querySelector('.volume-regulator-label');
+    const regulatorSlider = card.querySelector('.volume-regulator-slider');
+    const regulatorDisplay = card.querySelector('.volume-regulator-display');
 
-      const brightnessLabel = document.createElement("label");
-      brightnessLabel.textContent = "Яскравість:";
-      brightnessLabel.className = "form-label mb-0";
+    if (device.volumeRegulator) {
+      regulatorWrapper.classList.remove('d-none'); // Показуємо регулятор
+      regulatorSlider.max = "100";
+      regulatorSlider.value = device.volumeRegulator.volume;
+      regulatorDisplay.textContent = device.volumeRegulator.muted ? "(X)" : device.volumeRegulator.volume;
+
+      // Блокуємо регулятор, якщо пристрій вимкнений або для WindowBlind якщо жалюзі підняті
+      if (!device.isOn) {
+        regulatorSlider.disabled = true;
+        regulatorLabel.classList.add('text-muted');
+      } else {
+        if (device instanceof WindowBlind && !device.isDown) {
+          regulatorSlider.disabled = true;
+          regulatorLabel.classList.add('text-muted');
+        } else if (device instanceof TV && device.volumeRegulator.muted) {
+          regulatorSlider.disabled = true;
+          regulatorLabel.classList.add('text-muted');
+        } else {
+          regulatorSlider.disabled = false;
+          regulatorLabel.classList.remove('text-muted');
+        }
+      }
+
+      // Змінюємо label залежно від типу
+      regulatorLabel.textContent = device.volumeRegulator.name;
+      regulatorSlider.max = device.volumeRegulator.volumeMax;
       
-      const brightnessSlider = document.createElement("input");
-      brightnessSlider.type = "range";
-      brightnessSlider.className = "form-range flex-grow-1";
-      brightnessSlider.min = "0";
-      brightnessSlider.max = "100";
-      brightnessSlider.value = device.volume;
-      
-      const brightnessDisplay = document.createElement("span");
-      brightnessDisplay.textContent = device.volume;
-      brightnessDisplay.className = "badge bg-secondary badge__volume";
-      
-      brightnessSlider.addEventListener("input", () => {
-        device.setVolume(parseInt(brightnessSlider.value));
-        brightnessDisplay.textContent = device.volume;
-        // Оновлення статусу світильника в картці
+      // Обробник змін регулятора
+      regulatorSlider.addEventListener("input", () => {
+        device.setVolume(parseInt(regulatorSlider.value));
+        regulatorDisplay.textContent = device.volumeRegulator.volume;
         div.querySelector('.device-status').textContent = `[${device.getStatus()}]`;
       });
-      
-      brightnessContainer.appendChild(brightnessLabel);
-      brightnessContainer.appendChild(brightnessSlider);
-      brightnessContainer.appendChild(brightnessDisplay);
-      
-      card.querySelector('.specific-buttons').appendChild(brightnessContainer);
     }
 
     // Спеціальні кнопки для WindowBlind
     if (device instanceof WindowBlind) {
       const openBtn = document.createElement("button");
-      openBtn.textContent = "Відкрити";
+      openBtn.textContent = "Підняти";
       openBtn.className = "btn btn-sm btn-info mt-2";
       openBtn.addEventListener("click", () => {
-        device.open();
+        device.setDown(false); // підняти
         renderDevices();
       });
       
       const closeBtn = document.createElement("button");
-      closeBtn.textContent = "Закрити";
+      closeBtn.textContent = "Опустити";
       closeBtn.className = "btn btn-sm btn-info mt-2 ms-1";
       closeBtn.addEventListener("click", () => {
-        device.close();
+        device.setDown(true); // опустити
         renderDevices();
       });
       
@@ -339,7 +419,7 @@ function renderDevices() {
     // Спеціальні кнопки для TV
     if (device instanceof TV) {
       const prevBtn = document.createElement("button");
-      prevBtn.textContent = "Попередній канал";
+      prevBtn.textContent = "Канал --";
       prevBtn.className = "btn btn-sm btn-warning mt-2 card-specific__btn";
       prevBtn.addEventListener("click", () => {
         device.prevChannel();
@@ -347,51 +427,29 @@ function renderDevices() {
       });
       
       const nextBtn = document.createElement("button");
-      nextBtn.textContent = "Наступний канал";
+      nextBtn.textContent = "Канал ++";
       nextBtn.className = "btn btn-sm btn-warning mt-2 ms-1 card-specific__btn";
       nextBtn.addEventListener("click", () => {
         device.nextChannel();
         renderDevices();
       });
       
+      const muteBtn = document.createElement("button");
+      muteBtn.textContent = "Mute";
+      muteBtn.className = "btn btn-sm btn-secondary mt-2 ms-1 card-specific__btn";
+      muteBtn.addEventListener("click", () => {
+        device.toggleMute();
+        renderDevices();
+      });
+
       // Контейнер для кнопок каналів
       const channelBtnsContainer = document.createElement("div");
       channelBtnsContainer.className = "mb-2 d-flex card-device__btn-group";
       channelBtnsContainer.appendChild(prevBtn);
       channelBtnsContainer.appendChild(nextBtn);
-      
-      // Контейнер для регулятора звуку
-      const volumeContainer = document.createElement("div");
-      volumeContainer.className = "d-flex align-items-center gap-1";
-      
-      const volumeLabel = document.createElement("label");
-      volumeLabel.textContent = "Гучність:";
-      volumeLabel.className = "form-label mb-0";
-      
-      const volumeSlider = document.createElement("input");
-      volumeSlider.type = "range";
-      volumeSlider.className = "form-range flex-grow-1";
-      volumeSlider.min = "0";
-      volumeSlider.max = "100";
-      volumeSlider.value = device.volume;
-      
-      const volumeDisplay = document.createElement("span");
-      volumeDisplay.textContent = device.volume;
-      volumeDisplay.className = "badge bg-secondary badge__volume";
-      
-      volumeSlider.addEventListener("input", () => {
-        device.setVolume(parseInt(volumeSlider.value));
-        volumeDisplay.textContent = device.volume;
-        // Оновлення статусу телевізора в картці
-        div.querySelector('.device-status').textContent = `[${device.getStatus()}]`;
-      });
-      
-      volumeContainer.appendChild(volumeLabel);
-      volumeContainer.appendChild(volumeSlider);
-      volumeContainer.appendChild(volumeDisplay);
-      
+      channelBtnsContainer.appendChild(muteBtn);
+
       card.querySelector('.specific-buttons').appendChild(channelBtnsContainer);
-      card.querySelector('.specific-buttons').appendChild(volumeContainer);
     }
 
     // Додаємо всю картку до div
@@ -423,19 +481,9 @@ document.getElementById("addDeviceBtn").onclick = () => {
   const name = deviceSelect.options[deviceSelect.selectedIndex].text.trim();
   const extendedName = document.getElementById("extendedName").value.trim();
   const location = document.getElementById("deviceLocation").value;
-  
-  //if (!name) return alert("Вкажіть назву пристрою");
-  
-  let device;
 
-  switch(type) {
-    case "Light": device = new Light(name, extendedName, type, location); break;
-    case "HeatingBoiler": device = new HeatingBoiler(name, extendedName, type, location); break;
-    case "WindowBlind": device = new WindowBlind(name,extendedName, type, location); break;
-    case "TV": device = new TV(name, extendedName, location); break;
-
-    default: device = new Device(name, extendedName, type, location);
-  }
+  const Constructor = deviceConstructors[type] || Device;
+  const device = new Constructor(name, extendedName, type, location);
 
   home.addDevice(device);
   renderDevices();

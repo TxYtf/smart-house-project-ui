@@ -91,7 +91,18 @@
             <p class="card-text"><em class="card-text-content"></em></p>
             <p><strong class="device-status"></strong></p>
           </div>
+          
+          <!-- Індивідуальні кнопки -->
           <div class="specific-buttons p-2 border-top"></div>
+            
+          <!-- Універсальний регулятор -->
+          <div class="volume-regulator-wrapper d-none mt-2">
+            <div class="d-flex align-items-center gap-1 badge__volume">
+              <label class="form-label mb-0 volume-regulator-label"></label>
+              <input type="range" class="form-range flex-grow-1 volume-regulator-slider" min="0" max="100">
+              <span class="badge bg-secondary volume-regulator-display"></span>
+            </div>
+          </div>
         </div>
         <div class="mt-1"></div>
         <div class="collapse my-1 integration-collapse">
@@ -121,9 +132,11 @@
         </div>
 
         <div class="card-device-out__btn-group d-flex gap-1 mt-1">
-          <button class="card-device-out__btn btn btn-sm btn-success flex-fill toggle-btn">
+          <button class="card-device-out__btn btn btn-sm btn-success flex-fill toggle-btn"
+                  title = "Увімкнути/Вимкнути цей пристрій">
           </button>
-          <button class="card-device-out__btn btn btn-sm btn-danger flex-fill remove-btn">
+          <button class="card-device-out__btn btn btn-sm btn-danger flex-fill remove-btn"
+                  title = "Видалити цей пристрій з системи">
             Видалити
           </button>
           <button class="card-device-out__btn btn btn-sm btn-secondary flex-fill integration-btn" 

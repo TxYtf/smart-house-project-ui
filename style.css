@@ -3,6 +3,7 @@ body {
 }
 
 .card-device {
+  min-height: 300px;
   border: 1px solid #dee2e6;
   border-radius: 0.5rem;
   padding: 1rem;
@@ -19,8 +20,7 @@ body {
 }
 
 .card-device button {
-  margin-right: 0.5rem;
-  margin-top: 0.3rem;
+  margin-top: 0.2rem;
 }
 
 .card-device__btn-group {
@@ -35,9 +35,8 @@ body {
   width: 100%;
 }
 
-
-
 .badge__volume {
   min-width: 40px;
   text-align: center;
+  margin-top: 0.1rem;
 }
