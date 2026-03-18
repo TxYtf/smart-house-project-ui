@@ -1,0 +1,383 @@
+<!DOCTYPE html> <!-- Чистий Bootstrap -->
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Логін - Розумний Будинок</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/login.css">
+  </head>
+  <body class="bg-light">
+
+    <!-- Хедер з адаптивним контейнером -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+      <div class="container">
+        <a class="navbar-brand" href="#">Розумний Будинок</a>
+        <div class="d-flex align-items-center ms-auto">
+          <select id="languageSelect" class="form-select form-select-sm">
+            <option value="uk" selected>UA</option>
+            <option value="en">EN</option>
+          </select>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Основний контейнер контенту -->
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+          <!-- Форма логіну -->
+          <div class="card shadow-sm">
+            <div class="card-body p-5">
+              <h2 class="card-title text-center mb-4">Логін</h2>
+
+              <!-- Повідомлення про помилку -->
+              <div id="errorAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+                <span id="errorMessage"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрити"></button>
+              </div>
+
+              <!-- Форма логіну -->
+              <form id="loginForm">
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input 
+                    type="email" 
+                    class="form-control" 
+                    id="email" 
+                    placeholder="your@email.com"
+                    required
+                  >
+                </div>
+
+                <div class="mb-3">
+                  <label for="password" class="form-label">Пароль</label>
+                  <input 
+                    type="password" 
+                    class="form-control" 
+                    id="password" 
+                    placeholder="••••••••"
+                    required
+                  >
+                </div>
+
+                <div class="form-check mb-3">
+                  <input type="checkbox" class="form-check-input" id="rememberMe">
+                  <label class="form-check-label" for="rememberMe">
+                    Запам'ятати мене
+                  </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" id="loginBtn">
+                  <span id="btnText">Увійти</span>
+                  <span id="loadingSpinner" class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true" style="display: none;"></span>
+                </button>
+              </form>
+
+              <hr class="my-4">
+
+              <div class="text-center">
+                <p class="mb-2">Немаєте облікового запису? <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#signupModal">Зареєструватися</a></p>
+                <p class="mb-0"><a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#restorePasswordModal">Забули пароль?</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальне вікно реєстрації -->
+    <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="signupModalLabel">Реєстрація</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Закрити"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Повідомлення про помилку -->
+            <div id="signupErrorAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+              <span id="signupErrorMessage"></span>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрити"></button>
+            </div>
+
+            <!-- Повідомлення про успіх -->
+            <div id="signupSuccessAlert" class="alert alert-success alert-dismissible fade show d-none" role="alert">
+              <span id="signupSuccessMessage"></span>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрити"></button>
+            </div>
+
+            <form id="signupForm">
+              <div class="mb-3">
+                <label for="signupName" class="form-label">Ім'я</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="signupName" 
+                  placeholder="Ваше ім'я"
+                  required
+                >
+              </div>
+
+              <div class="mb-3">
+                <label for="signupEmail" class="form-label">Email</label>
+                <input 
+                  type="email" 
+                  class="form-control" 
+                  id="signupEmail" 
+                  placeholder="your@email.com"
+                  required
+                >
+              </div>
+
+              <div class="mb-3">
+                <label for="signupPassword" class="form-label">Пароль</label>
+                <input 
+                  type="password" 
+                  class="form-control" 
+                  id="signupPassword" 
+                  placeholder="••••••••"
+                  required
+                >
+              </div>
+
+              <div class="mb-3">
+                <label for="signupPasswordConfirm" class="form-label">Підтвердіть пароль</label>
+                <input 
+                  type="password" 
+                  class="form-control" 
+                  id="signupPasswordConfirm" 
+                  placeholder="••••••••"
+                  required
+                >
+              </div>
+
+              <div class="form-check mb-3">
+                <input type="checkbox" class="form-check-input" id="signupAgree" required>
+                <label class="form-check-label" for="signupAgree">
+                  Я погоджуюся з умовами використання
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100" id="signupBtn">
+                <span id="signupBtnText">Зареєструватися</span>
+                <span id="signupLoadingSpinner" class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true" style="display: none;"></span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальне вікно відновлення пароля -->
+    <div class="modal fade" id="restorePasswordModal" tabindex="-1" aria-labelledby="restorePasswordModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="restorePasswordModalLabel">Відновлення пароля</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Закрити"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Повідомлення про помилку -->
+            <div id="restoreErrorAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+              <span id="restoreErrorMessage"></span>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрити"></button>
+            </div>
+
+            <!-- Повідомлення про успіх -->
+            <div id="restoreSuccessAlert" class="alert alert-success alert-dismissible fade show d-none" role="alert">
+              <span id="restoreSuccessMessage"></span>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрити"></button>
+            </div>
+
+            <p class="text-muted mb-3">Введіть email, пов'язаний з вашим обліковим записом, і ми надішлемо вам посилання для відновлення пароля.</p>
+
+            <form id="restorePasswordForm">
+              <div class="mb-3">
+                <label for="restoreEmail" class="form-label">Email</label>
+                <input 
+                  type="email" 
+                  class="form-control" 
+                  id="restoreEmail" 
+                  placeholder="your@email.com"
+                  required
+                >
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100" id="restoreBtn">
+                <span id="restoreBtnText">Надіслати посилання</span>
+                <span id="restoreLoadingSpinner" class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true" style="display: none;"></span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="./scripts/auth.js"></script>
+    <script src="./scripts/login.js"></script>
+    <script>
+      // Логін форма
+      document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const rememberMe = document.getElementById('rememberMe').checked;
+
+        const loginBtn = document.getElementById('loginBtn');
+        const btnText = document.getElementById('btnText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const errorAlert = document.getElementById('errorAlert');
+        const errorMessage = document.getElementById('errorMessage');
+
+        loginBtn.disabled = true;
+        btnText.style.display = 'none';
+        loadingSpinner.style.display = 'inline-block';
+
+        try {
+          const success = await Auth.login(email, password);
+
+          if (success) {
+            if (rememberMe) {
+              localStorage.setItem('rememberMe', 'true');
+            }
+            window.location.href = 'index.html';
+          } else {
+            errorMessage.textContent = 'Невірний email або пароль';
+            errorAlert.classList.remove('d-none');
+          }
+        } catch (error) {
+          errorMessage.textContent = 'Помилка при логіні: ' + error.message;
+          errorAlert.classList.remove('d-none');
+        } finally {
+          loginBtn.disabled = false;
+          btnText.style.display = 'inline';
+          loadingSpinner.style.display = 'none';
+        }
+      });
+
+      // Реєстрація форма
+      document.getElementById('signupForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('signupName').value;
+        const email = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+        const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+
+        const signupBtn = document.getElementById('signupBtn');
+        const signupBtnText = document.getElementById('signupBtnText');
+        const signupLoadingSpinner = document.getElementById('signupLoadingSpinner');
+        const signupErrorAlert = document.getElementById('signupErrorAlert');
+        const signupErrorMessage = document.getElementById('signupErrorMessage');
+        const signupSuccessAlert = document.getElementById('signupSuccessAlert');
+        const signupSuccessMessage = document.getElementById('signupSuccessMessage');
+
+        // Перевірка паролів
+        if (password !== passwordConfirm) {
+          signupErrorMessage.textContent = 'Паролі не збігаються';
+          signupErrorAlert.classList.remove('d-none');
+          return;
+        }
+
+        signupBtn.disabled = true;
+        signupBtnText.style.display = 'none';
+        signupLoadingSpinner.style.display = 'inline-block';
+        signupErrorAlert.classList.add('d-none');
+        signupSuccessAlert.classList.add('d-none');
+
+        try {
+          const response = await fetch('https://api.smart-house/auth/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            signupSuccessMessage.textContent = 'Реєстрація успішна! Перенаправляємо на логін...';
+            signupSuccessAlert.classList.remove('d-none');
+            
+            setTimeout(() => {
+              document.getElementById('signupForm').reset();
+              const modal = bootstrap.Modal.getInstance(document.getElementById('signupModal'));
+              modal.hide();
+            }, 2000);
+          } else {
+            signupErrorMessage.textContent = data.message || 'Помилка при реєстрації';
+            signupErrorAlert.classList.remove('d-none');
+          }
+        } catch (error) {
+          signupErrorMessage.textContent = 'Помилка при реєстрації: ' + error.message;
+          signupErrorAlert.classList.remove('d-none');
+        } finally {
+          signupBtn.disabled = false;
+          signupBtnText.style.display = 'inline';
+          signupLoadingSpinner.style.display = 'none';
+        }
+      });
+
+      // Відновлення пароля форма
+      document.getElementById('restorePasswordForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('restoreEmail').value;
+
+        const restoreBtn = document.getElementById('restoreBtn');
+        const restoreBtnText = document.getElementById('restoreBtnText');
+        const restoreLoadingSpinner = document.getElementById('restoreLoadingSpinner');
+        const restoreErrorAlert = document.getElementById('restoreErrorAlert');
+        const restoreErrorMessage = document.getElementById('restoreErrorMessage');
+        const restoreSuccessAlert = document.getElementById('restoreSuccessAlert');
+        const restoreSuccessMessage = document.getElementById('restoreSuccessMessage');
+
+        restoreBtn.disabled = true;
+        restoreBtnText.style.display = 'none';
+        restoreLoadingSpinner.style.display = 'inline-block';
+        restoreErrorAlert.classList.add('d-none');
+        restoreSuccessAlert.classList.add('d-none');
+
+        try {
+          const response = await fetch('https://api.smart-house/auth/restore-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            restoreSuccessMessage.textContent = 'Посилання для відновлення пароля надіслано на ваш email';
+            restoreSuccessAlert.classList.remove('d-none');
+            
+            setTimeout(() => {
+              document.getElementById('restorePasswordForm').reset();
+              const modal = bootstrap.Modal.getInstance(document.getElementById('restorePasswordModal'));
+              modal.hide();
+            }, 3000);
+          } else {
+            restoreErrorMessage.textContent = data.message || 'Помилка при відновленні пароля';
+            restoreErrorAlert.classList.remove('d-none');
+          }
+        } catch (error) {
+          restoreErrorMessage.textContent = 'Помилка: ' + error.message;
+          restoreErrorAlert.classList.remove('d-none');
+        } finally {
+          restoreBtn.disabled = false;
+          restoreBtnText.style.display = 'inline';
+          restoreLoadingSpinner.style.display = 'none';
+        }
+      });
+
+      if (Auth.isAuthenticated()) {
+        window.location.href = 'index.html';
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,3 @@
+[submodule "SmartHouseAPI"]
+	path = SmartHouseAPI
+	url = https://github.com/TxYtf/smart-house-api

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Логін - Розумний Будинок</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/login.css">
+  </head>
+  <body>
+    <div class="login-container">
+      <!-- ##### Картка логіну ##### -->
+      <div class="auth-card" id="loginCard">
+        <div class="auth-card__header">
+          <h1>🏠 Розумний Будинок</h1>
+          <p>Система управління розумним будинком</p>
+        </div>
+
+        <div class="auth-card__body">
+          <!-- Повідомлення про помилку -->
+          <div id="errorAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+            <span id="errorMessage"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрити"></button>
+          </div>
+
+          <!-- Форма логіну -->
+          <form id="loginForm">
+            <div class="auth-card__form-group">
+              <label for="email" class="auth-card__form-label">Email</label>
+              <input 
+                type="email" 
+                class="auth-card__form-control" 
+                id="email" 
+                placeholder="your@email.com"
+                required
+              >
+            </div>
+
+            <div class="auth-card__form-group">
+              <label for="password" class="auth-card__form-label">Пароль</label>
+              <input 
+                type="password" 
+                class="auth-card__form-control" 
+                id="password" 
+                placeholder="••••••••"
+                required
+              >
+            </div>
+
+            <div class="remember-me">
+              <input type="checkbox" id="rememberMe" class="form-check-input">
+              <label for="rememberMe" class="form-check-label">Запам'ятати мене</label>
+            </div>
+
+            <button type="submit" class="btn auth-card__btn" id="loginBtn">
+              <span id="btnText">Увійти</span>
+              <span id="loadingSpinner" class="loading-spinner">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              </span>
+            </button>
+          </form>
+
+          <div class="auth-card__footer">
+            <div class="text-center">
+              <p class="mb-2">Не маєте облікового запису? <a href="#" class="text-decoration-none" id="showSignupLink">Зареєструватися</a></p>
+              <p class="mb-0"><a href="#" class="text-decoration-none" id="showRestorePasswordLink">Забули пароль?</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ##### Картка реєстрації ##### -->
+      <div class="auth-card d-none" id="signupCard">
+        <div class="auth-card__header">
+          <h1>🏠 Розумний Будинок</h1>
+          <p>Реєстрація нового облікового запису</p>
+        </div>
+
+        <div class="auth-card__body">
+          <!-- Повідомлення про помилку -->
+          <div id="signupErrorAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+            <span id="signupErrorMessage"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрити"></button>
+          </div>
+
+          <!-- Повідомлення про успіх -->
+          <div id="signupSuccessAlert" class="alert alert-success alert-dismissible fade show d-none" role="alert">
+            <span id="signupSuccessMessage"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрити"></button>
+          </div>
+
+          <!-- Форма реєстрації -->
+          <form id="signupForm">
+            <div class="auth-card__form-group">
+              <label for="signupName" class="auth-card__form-label">Ім'я</label>
+              <input 
+                type="text" 
+                class="auth-card__form-control" 
+                id="signupName" 
+                placeholder="Ваше ім'я"
+                required
+              >
+            </div>
+
+            <div class="auth-card__form-group">
+              <label for="signupEmail" class="auth-card__form-label">Email</label>
+              <input 
+                type="email" 
+                class="auth-card__form-control" 
+                id="signupEmail" 
+                placeholder="your@email.com"
+                required
+              >
+            </div>
+
+            <div class="auth-card__form-group">
+              <label for="signupPassword" class="auth-card__form-label">Пароль</label>
+              <input 
+                type="password" 
+                class="auth-card__form-control" 
+                id="signupPassword" 
+                placeholder="••••••••"
+                required
+              >
+            </div>
+
+            <div class="auth-card__form-group">
+              <label for="signupPasswordConfirm" class="auth-card__form-label">Підтвердіть пароль</label>
+              <input 
+                type="password" 
+                class="auth-card__form-control" 
+                id="signupPasswordConfirm" 
+                placeholder="••••••••"
+                required
+              >
+            </div>
+
+            <div class="remember-me">
+              <input type="checkbox" id="signupAgree" class="form-check-input" required>
+              <label for="signupAgree" class="form-check-label">Я погоджуюся з умовами використання</label>
+            </div>
+
+            <button type="submit" class="btn auth-card__btn" id="signupBtn">
+              <span id="signupBtnText">Зареєструватися</span>
+              <span id="signupLoadingSpinner" class="loading-spinner">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              </span>
+            </button>
+          </form>
+
+          <div class="auth-card__footer">
+            <div class="text-center">
+              <p class="mb-0">Вже маєте обліковий запис? <a href="#" class="text-decoration-none" id="showLoginFromSignup">Увійти</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ##### Картка відновлення пароля ##### -->
+      <div class="auth-card d-none" id="restorePasswordCard">
+        <div class="auth-card__header">
+          <h1>🏠 Розумний Будинок</h1>
+          <p>Відновлення пароля</p>
+        </div>
+
+        <div class="auth-card__body">
+          <!-- Повідомлення про помилку -->
+          <div id="restoreErrorAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+            <span id="restoreErrorMessage"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрити"></button>
+          </div>
+
+          <!-- Повідомлення про успіх -->
+          <div id="restoreSuccessAlert" class="alert alert-success alert-dismissible fade show d-none" role="alert">
+            <span id="restoreSuccessMessage"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрити"></button>
+          </div>
+
+          <p class="text-muted mb-3">Введіть email, пов'язаний з вашим обліковим записом, і ми надішлемо вам посилання для відновлення пароля.</p>
+
+          <!-- Форма відновлення пароля -->
+          <form id="restorePasswordForm">
+            <div class="auth-card__form-group">
+              <label for="restoreEmail" class="auth-card__form-label">Email</label>
+              <input 
+                type="email" 
+                class="auth-card__form-control" 
+                id="restoreEmail" 
+                placeholder="your@email.com"
+                required
+              >
+            </div>
+
+            <button type="submit" class="btn auth-card__btn" id="restoreBtn">
+              <span id="restoreBtnText">Надіслати посилання</span>
+              <span id="restoreLoadingSpinner" class="loading-spinner">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              </span>
+            </button>
+          </form>
+
+          <div class="auth-card__footer">
+            <div class="text-center">
+              <p class="mb-0"><a href="#" class="text-decoration-none" id="showLoginFromRestore">Повернутися до логіну</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="./scripts/auth.js"></script>
+    <script src="./scripts/login.js"></script>
+
+  </body>
+</html>
