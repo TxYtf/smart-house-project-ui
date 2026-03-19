@@ -6,6 +6,7 @@
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  const login = document.getElementById('login').value;
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
   const rememberMe = document.getElementById('rememberMe').checked;
@@ -25,7 +26,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   setLoading('loginBtn', 'btnText', 'loadingSpinner', true);
 
   try {
-    const success = await Auth.login(email, password);
+    const success = await Auth.login(login, email, password);
 
     if (success) {
       if (rememberMe) {
@@ -58,6 +59,7 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const name = document.getElementById('signupName').value;
+  const login = document.getElementById('signupLogin').value;
   const email = document.getElementById('signupEmail').value;
   const password = document.getElementById('signupPassword').value;
   const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
@@ -90,10 +92,10 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
     // const response = await fetch('https://api.smart-house/auth/signup', {
     //   method: 'POST',
     //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ name, email, password })
+    //   body: JSON.stringify({ name, login, email, password })
     // });
     // const data = await response.json();    
-    const data = await Auth.signup(name, email, password);
+    const data = await Auth.signup(name, login, email, password);
 
     if (data.success || data.token) {
       // signupSuccessMessage.textContent = 'Реєстрація успішна! Перенаправляємо на логін...';
@@ -221,6 +223,7 @@ function clearAlerts(alertIds) {
 // Функції для переключення між формами логіну, реєстрації та відновлення пароля
 function showLogin(e) {
   e.preventDefault();
+  document.querySelector('.auth-header__subtitle').textContent = 'Система управління розумним будинком';
   document.getElementById('loginCard').classList.remove('d-none');
   document.getElementById('signupCard').classList.add('d-none');
   document.getElementById('restorePasswordCard').classList.add('d-none');
@@ -228,6 +231,7 @@ function showLogin(e) {
 
 function showSignup(e) {
   e.preventDefault();
+  document.querySelector('.auth-header__subtitle').textContent = 'Реєстрація нового облікового запису';
   document.getElementById('loginCard').classList.add('d-none');
   document.getElementById('signupCard').classList.remove('d-none');
   document.getElementById('restorePasswordCard').classList.add('d-none');
@@ -235,6 +239,7 @@ function showSignup(e) {
 
 function showRestorePassword(e) {
   e.preventDefault();
+  document.querySelector('.auth-header__subtitle').textContent = 'Відновлення пароля';
   document.getElementById('loginCard').classList.add('d-none');
   document.getElementById('signupCard').classList.add('d-none');
   document.getElementById('restorePasswordCard').classList.remove('d-none');

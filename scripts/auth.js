@@ -2,11 +2,11 @@ class Auth {
   static API_AUTH_URL = 'https://ne7yja1gxe.execute-api.eu-north-1.amazonaws.com/smart-house-api/auth';
 
   // ----- обробка логіну -----
-  static async login(email, password) {
+  static async login(login, email, password) {
     const response = await fetch(`${this.API_AUTH_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ login, email, password })
     });
 
     // Парсимо відповідь    
@@ -17,17 +17,18 @@ class Auth {
     if (data.token) {
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.userId);
+      localStorage.setItem('login', login);  // ← зберігаємо логін
       return true;
     }
     return false;
   }
 
-  // ----- обробка реєстрації тового користувача -----
-  static async signup(name, email, password) {
+  // ----- обробка реєстрації нового користувача -----
+  static async signup(name, login, email, password) {
     const response = await fetch(`${this.API_AUTH_URL}/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password })
+      body: JSON.stringify({ name, login, email, password })
     });
 
     // Парсимо відповідь    
@@ -61,6 +62,7 @@ class Auth {
   static logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
+    localStorage.removeItem('login');
     window.location.href = 'login.html';
   }
 }

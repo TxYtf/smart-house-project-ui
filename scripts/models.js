@@ -42,7 +42,7 @@ const Light = Device.registerClass(
     constructor(name, extendedName, type, location) {
       super(name, extendedName, "Light", location);
       this.volumeRegulator = {
-        name: "Яскравість:",
+        get name() { return i18n[currentLang].models.Light.regulatorName; },
         type: "brightness",
         volume: 100, // 0 - вимкнено, 100 - максимально яскраво
         volumeMax: 100
@@ -50,7 +50,9 @@ const Light = Device.registerClass(
     }
     setVolume(vol) { this.volumeRegulator.volume = vol; }
     getStatus() {
-      return this.isOn ? `ON, яскравість: ${this.volumeRegulator.volume}` : "OFF";
+      return this.isOn
+        ? i18n[currentLang].models.Light.status(this.volumeRegulator.volume)
+        : i18n[currentLang].models.off;
     }
   }
 );
@@ -61,7 +63,7 @@ const HeatingBoiler = Device.registerClass(
     constructor(name, extendedName, type, location) {
       super(name, extendedName, "HeatingBoiler", location);
       this.volumeRegulator = {
-        name: "Рівень опалення:",
+        get name() { return i18n[currentLang].models.HeatingBoiler.regulatorName; },
         type: "heatingLevel",
         volume: 0, // 0 - вимкнено, 100 - максимальний рівень
         volumeMax: 100
@@ -69,8 +71,10 @@ const HeatingBoiler = Device.registerClass(
     }
     setVolume(vol) { this.volumeRegulator.volume = vol; }
     getStatus() {
-      return this.isOn ? `ON, рівень опалення: ${this.volumeRegulator.volume}` : "OFF";
-    }
+      return this.isOn
+        ? i18n[currentLang].models.HeatingBoiler.status(this.volumeRegulator.volume)
+        : i18n[currentLang].models.off;
+        }
   }
 );
 
@@ -80,7 +84,7 @@ const WindowBlind = Device.registerClass(
     constructor(name, extendedName, type, location) {
       super(name, extendedName, "WindowBlind", location);
       this.volumeRegulator = {
-        name: "Відкриття:",
+        get name() { return i18n[currentLang].models.WindowBlind.regulatorName; },
         type: "openingLevel",
         volume: 0, // 0 - закрито, 100 - відкрито
         volumeMax: 100
@@ -88,22 +92,18 @@ const WindowBlind = Device.registerClass(
       this.isDown = true; // чи опущені жалюзі
     }
     setVolume(vol) { this.volumeRegulator.volume = vol; }
-    setDown(state) {
-      this.isDown = state;
-    }
+    setDown(state) { this.isDown = state; }
     getStatus() {
+      if (!this.isOn) return i18n[currentLang].models.off;
+
+      const t = i18n[currentLang].models.WindowBlind;
       let openVolume = "";
       if (this.isDown) {
-        if (this.volumeRegulator.volume === 100) {
-          openVolume = "повністю відкриті";
-        } else if (this.volumeRegulator.volume === 0) {
-          openVolume = "повністю закриті";
-        } else {
-          openVolume = `відкриті на ${this.volumeRegulator.volume}%`;
-        }
+        if (this.volumeRegulator.volume === 100) openVolume = t.fullyOpen;
+        else if (this.volumeRegulator.volume === 0) openVolume = t.fullyClosed;
+        else openVolume = t.partiallyOpen(this.volumeRegulator.volume);
       }
-      return this.isOn ? `ON, ${this.isDown ? "опущені, " : "підняті"}${openVolume}` : "OFF";
-    }
+      return t.status(this.isDown, openVolume);    }
   }
 );
 
@@ -115,7 +115,7 @@ const TV = Device.registerClass(
       this.channel = 1;
       this.channels = ["1. News", "2. Sports", "3. Movies"];
       this.volumeRegulator = {
-        name: "Гучність:",
+        get name() { return i18n[currentLang].models.TV.regulatorName; },
         type: "volumeLevel",
         volume: 10, // 0 - вимкнено, 100 - максимально гучно
         volumeMax: 100,
@@ -125,12 +125,12 @@ const TV = Device.registerClass(
     nextChannel() { this.channel = (this.channel % this.channels.length) + 1; }
     prevChannel() { this.channel = (this.channel - 2 + this.channels.length) % this.channels.length + 1; }
     setVolume(vol) { this.volumeRegulator.volume = vol; }
-    toggleMute() {
-      this.volumeRegulator.muted = !this.volumeRegulator.muted;
-    }
+    toggleMute() { this.volumeRegulator.muted = !this.volumeRegulator.muted; }
     getStatus() {
-      let volumeStatus = this.volumeRegulator.muted ? "Muted" : this.volumeRegulator.volume;
-      return this.isOn ? `ON, ch: ${this.channels[this.channel-1]}, гучність: ${volumeStatus}` : "OFF";
+      if (!this.isOn) return i18n[currentLang].models.off;
+      const t = i18n[currentLang].models.TV;
+      const vol = this.volumeRegulator.muted ? 'Muted' : this.volumeRegulator.volume;
+      return t.status(this.channels[this.channel - 1], vol);
     }
   }
 );

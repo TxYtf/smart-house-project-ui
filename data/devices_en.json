@@ -1,0 +1,335 @@
+[
+  {
+    "name": "Light",
+    "type": "Light",
+    "location": [
+      "Kitchen",
+      "Living Room",
+      "Room 1 Floor 1",
+      "Room 2 Floor 1",
+      "Office Floor 1",
+      "Hallway Floor 1",
+      "Bathroom Floor 1",
+      "Wardrobe Floor 1",
+      "Storage Floor 1",
+      "Room 1 Floor 2",
+      "Room 2 Floor 2",
+      "Hallway Floor 2",
+      "Bathroom Floor 2",
+      "Storage Floor 2",
+      "Wardrobe Floor 2",
+      "Basement",
+      "Attic",
+      "Garage",
+      "Terrace",
+      "Yard"
+    ]
+  },
+  {
+    "name": "LED Strip",
+    "type": "LEDStrip",
+    "location": [
+      "Kitchen",
+      "Living Room",
+      "Room 1 Floor 1",
+      "Room 2 Floor 1",
+      "Office Floor 1",
+      "Hallway Floor 1",
+      "Bathroom Floor 1",
+      "Wardrobe Floor 1",
+      "Room 1 Floor 2",
+      "Room 2 Floor 2",
+      "Hallway Floor 2",
+      "Bathroom Floor 2",
+      "Wardrobe Floor 2",
+      "Garage",
+      "Terrace",
+      "Yard"
+    ]
+  },
+  {
+    "name": "Socket",
+    "type": "Socket",
+    "location": [
+      "Kitchen",
+      "Living Room",
+      "Room 1 Floor 1",
+      "Room 2 Floor 1",
+      "Office Floor 1",
+      "Hallway Floor 1",
+      "Bathroom Floor 1",
+      "Wardrobe Floor 1",
+      "Storage Floor 1",
+      "Room 1 Floor 2",
+      "Room 2 Floor 2",
+      "Hallway Floor 2",
+      "Bathroom Floor 2",
+      "Storage Floor 2",
+      "Wardrobe Floor 2",
+      "Basement",
+      "Attic",
+      "Garage",
+      "Terrace",
+      "Yard"
+    ]
+  },
+  {
+    "name": "TV",
+    "type": "TV",
+    "location": [
+      "Kitchen",
+      "Living Room",
+      "Room 1 Floor 1",
+      "Room 2 Floor 1",
+      "Office Floor 1",
+      "Room 1 Floor 2",
+      "Room 2 Floor 2"
+    ]
+  },
+  {
+    "name": "Sound System",
+    "type": "SoundSystem",
+    "location": [
+      "Kitchen",
+      "Living Room",
+      "Room 1 Floor 1",
+      "Room 2 Floor 1",
+      "Office Floor 1",
+      "Room 1 Floor 2",
+      "Room 2 Floor 2",
+      "Terrace",
+      "Yard",
+      "Garage"
+    ]
+  },
+  {
+    "name": "Window Blind",
+    "type": "WindowBlind",
+    "location": [
+      "Kitchen",
+      "Living Room",
+      "Room 1 Floor 1",
+      "Room 2 Floor 1",
+      "Office Floor 1",
+      "Room 1 Floor 2",
+      "Room 2 Floor 2"
+    ]
+  },
+  {
+    "name": "Window Sensor",
+    "type": "WindowSensor",
+    "location": [
+      "Kitchen",
+      "Living Room",
+      "Room 1 Floor 1",
+      "Room 2 Floor 1",
+      "Office Floor 1",
+      "Room 1 Floor 2",
+      "Room 2 Floor 2"
+    ]
+  },
+  {
+    "name": "Motion Sensor",
+    "type": "MotionSensor",
+    "location": [
+      "Kitchen",
+      "Living Room",
+      "Room 1 Floor 1",
+      "Room 2 Floor 1",
+      "Office Floor 1",
+      "Hallway Floor 1",
+      "Bathroom Floor 1",
+      "Wardrobe Floor 1",
+      "Storage Floor 1",
+      "Room 1 Floor 2",
+      "Room 2 Floor 2",
+      "Hallway Floor 2",
+      "Bathroom Floor 2",
+      "Storage Floor 2",
+      "Wardrobe Floor 2",
+      "Basement",
+      "Attic",
+      "Garage",
+      "Terrace",
+      "Yard"
+    ]
+  },
+  {
+    "name": "Security Camera",
+    "type": "Camera",
+    "location": [
+      "Yard",
+      "Terrace",
+      "Garage"
+    ]
+  },
+  {
+    "name": "Air Conditioner",
+    "type": "AirConditioner",
+    "location": [
+      "Kitchen",
+      "Living Room",
+      "Room 1 Floor 1",
+      "Room 2 Floor 1",
+      "Office Floor 1",
+      "Room 1 Floor 2",
+      "Room 2 Floor 2"
+    ]
+  },
+  {
+    "name": "Thermostat",
+    "type": "Thermostat",
+    "location": [
+      "Kitchen",
+      "Living Room",
+      "Room 1 Floor 1",
+      "Room 2 Floor 1",
+      "Office Floor 1",
+      "Bathroom Floor 1",
+      "Room 1 Floor 2",
+      "Room 2 Floor 2",
+      "Bathroom Floor 2"
+    ]
+  },
+  {
+    "name": "Underfloor Heater",
+    "type": "UnderfloorHeater",
+    "location": [
+      "Kitchen",
+      "Hallway Floor 1",
+      "Bathroom Floor 1",
+      "Bathroom Floor 2"
+    ]
+  },
+  {
+    "name": "Water Boiler",
+    "type": "WaterBoiler",
+    "location": [
+      "Bathroom Floor 1",
+      "Bathroom Floor 2",
+      "Basement"
+    ]
+  },
+  {
+    "name": "Exhaust Fan",
+    "type": "ExhaustFan",
+    "location": [
+      "Kitchen",
+      "Bathroom Floor 1",
+      "Bathroom Floor 2",
+      "Basement",
+      "Garage"
+    ]
+  },
+  {
+    "name": "Towel Rack",
+    "type": "TowelRack",
+    "location": [
+      "Bathroom Floor 1", 
+      "Bathroom Floor 2"
+    ]
+  },
+  {
+    "name": "Washing Machine",
+    "type": "WashingMachine",
+    "location": [
+      "Bathroom Floor 1",
+      "Bathroom Floor 2",
+      "Basement"
+    ]
+  },
+  {
+    "name": "Dryer",
+    "type": "Dryer",
+    "location": [
+      "Bathroom Floor 1",
+      "Bathroom Floor 2",
+      "Basement"
+    ]
+  },
+  {
+    "name": "Alarm",
+    "type": "Alarm",
+    "location": [
+      "Hallway Floor 1",
+      "Garage",
+      "Yard"
+    ]
+  },
+  {
+    "name": "Intercom",
+    "type": "Intercom",
+    "location": [
+      "Hallway Floor 1",
+      "Garage",
+      "Yard"
+    ]
+  },
+  {
+    "name": "Wi-Fi Router",
+    "type": "Router",
+    "location": [
+      "Hallway Floor 1"
+    ]
+  },
+  {
+    "name": "Door Lock",
+    "type": "DoorLock",
+    "location": [
+      "Hallway Floor 1",
+      "Garage",
+      "Terrace"
+    ]
+  },
+  {
+    "name": "Garage Door",
+    "type": "GarageDoor",
+    "location": [
+      "Garage"
+    ]
+  },
+  {
+    "name": "Fridge",
+    "type": "Fridge",
+    "location": [
+      "Kitchen",
+      "Garage",
+      "Basement"
+    ]
+  },
+  {
+    "name": "Oven",
+    "type": "Oven",
+    "location": [
+      "Kitchen"
+    ]
+  },
+  {
+    "name": "Coffee Maker",
+    "type": "CoffeeMaker",
+    "location": [
+      "Kitchen"
+    ]
+  },
+  {
+    "name": "Stove",
+    "type": "Stove",
+    "location": [
+      "Kitchen"
+    ]
+  },
+  {
+    "name": "Heating Boiler",
+    "type": "HeatingBoiler",
+    "location": [
+      "Basement"
+    ]
+  },
+  {
+    "name": "Sprinkler System",
+    "type": "SprinklerSystem",
+    "location": [
+      "Yard"
+    ]
+  }
+]

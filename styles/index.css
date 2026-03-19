@@ -1,42 +1,315 @@
+/* ===== Загальні змінні ===== */
+:root {
+  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --color-primary: #667eea;
+  --color-white: #ffffff;
+  --color-bg: #f0f2ff;
+  --color-text: #333;
+  --color-muted: #666;
+  --color-border: #ddd;
+  --radius: 0.75rem;
+  --radius-sm: 0.5rem;
+  --shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
 body {
+  background: var(--color-bg);
   font-family: 'Segoe UI', sans-serif;
+  color: var(--color-text);
 }
 
-.card-device {
+/* ===== Navbar ===== */
+.app-navbar {
+  background: var(--gradient);
+  padding: 0.75rem 0;
+  box-shadow: var(--shadow);
+}
+
+.app-navbar__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-white);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.app-navbar__logo {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+@media (max-width: 450px) {
+  .app-navbar__brand-text {
+    display: none;
+  }
+}
+
+.app-navbar__controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* .app-navbar__lang-select {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.9rem;
+  background: transparent;
+  color: var(--color-white);
+  margin-right: 0.5rem;
+  cursor: pointer
+} */
+
+.app-navbar__lang-dropdown {
+  position: relative;
+}
+
+.app-navbar__lang-btn {
+  /* background: rgba(255, 255, 255, 0.15); */
+  background: transparent;
+  /* border: 1px solid rgba(255, 255, 255, 0.4); */
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-white);
+  padding: 0.5rem 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  /* margin-right: 0.5rem; */
+}
+
+.app-navbar__lang-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.app-navbar__lang-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: var(--color-white);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  min-width: 100px;
+  z-index: 1000;
+}
+
+.app-navbar__lang-item {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.app-navbar__lang-item:hover {
+  background: #f0f2ff;
+  color: var(--color-primary);
+}
+
+.app-navbar__user {
+  color: var(--color-white);
+  font-size: 0.95rem;
+}
+
+.app-navbar__menu-btn::before {
+  content: '☰';
+  color: white;
+  font-size: 1.5rem;
+}
+
+.app-navbar__menu-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 0 0.5rem;
+  cursor: pointer;
+  color: white;
+  font-size: 1.25rem;
+  letter-spacing: 2px;
+  transform: scaleX(1.25);
+}
+
+.app-navbar__menu-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ===== Основний контейнер ===== */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.app-section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  color: var(--color-text);
+}
+
+/* ===== Панель додавання пристрою ===== */
+.app-panel {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.app-panel__header {
+  background: var(--gradient);
+  color: var(--color-white);
+  padding: 1rem 1.5rem;
+
+  h5 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+}
+
+.app-panel__body {
+  background: var(--color-white);
+  padding: 1.25rem 1.5rem;
+}
+
+.app-panel__label {
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+.app-panel__select,
+.app-panel__input {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  transition: border-color 0.3s;
+}
+
+.app-panel__select:focus,
+.app-panel__input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  outline: none;
+}
+
+.app-panel__select--sm,
+.app-panel__input--sm {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* ===== Кнопки ===== */
+.app-btn {
+  padding: 0.6rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  background: var(--gradient);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-white);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.app-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  color: var(--color-white);
+}
+
+.app-btn:active {
+  transform: translateY(0);
+}
+
+.app-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.app-btn--sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.app-btn--success {
+  background: linear-gradient(135deg, #258345 0%, #27ae95 100%);
+}
+
+.app-btn--danger {
+  background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+}
+
+.app-btn--secondary {
+  background: linear-gradient(135deg, #868f96 0%, #596164 100%);
+}
+
+/* ===== Картка пристрою ===== */
+.device-card {
+  background: var(--color-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
   min-height: 300px;
-  border: 1px solid #dee2e6;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  background-color: #ffffff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.card-device:hover {
+.device-card:hover {
   transform: translateY(-5px);
+  box-shadow: var(--shadow);
 }
 
-.card-device strong {
+.device-card__body {
+  padding: 1.25rem;
+}
+
+.device-card__title {
   font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
 }
 
-.card-device button {
-  margin-top: 0.2rem;
+.device-card__location {
+  color: var(--color-muted);
+  font-size: 0.9rem;
 }
 
-.card-device__btn-group {
-  width: 100%;
+.device-card__specific {
+  border-top: 1px solid var(--color-border);
 }
 
-.card-specific__btn {
-  min-width: 0;
+.device-card__integration {
+  background: #f8f9ff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
 }
 
-.card-device-out__btn-group {
-  width: 100%;
+.device-card__btn-group {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
 }
 
+/* ===== Регулятор ===== */
 .badge__volume {
-  min-width: 40px;
-  text-align: center;
-  margin-top: 0.1rem;
+  padding: 0.5rem 1rem;
 }

@@ -10,13 +10,23 @@
   </head>
   <body>
     <div class="login-container">
+      <!-- Спільний заголовок для всіх карточок -->
+      <div class="auth-card__header">
+        <div class="app-navbar__brand">
+          <span class="auth-card__header-logo">
+            🏠
+            <!-- PNG/JPG -->
+            <!-- <img src="./assets/logo.png" alt="logo" class="app-navbar__logo" style="height: 32px;"> -->
+            <!-- SVG -->
+            <!-- <img src="./assets/logo.svg" alt="logo" class="app-navbar__logo" style="height: 32px;"> -->
+          </span>
+          <h1 class="auth-header__title">Розумний Будинок</h1>            
+        </div>
+        <p class="auth-header__subtitle">Система управління розумним будинком</p>
+      </div>
+
       <!-- ##### Картка логіну ##### -->
       <div class="auth-card" id="loginCard">
-        <div class="auth-card__header">
-          <h1>🏠 Розумний Будинок</h1>
-          <p>Система управління розумним будинком</p>
-        </div>
-
         <div class="auth-card__body">
           <!-- Повідомлення про помилку -->
           <div id="errorAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
@@ -26,22 +36,33 @@
 
           <!-- Форма логіну -->
           <form id="loginForm">
-            <div class="auth-card__form-group">
-              <label for="email" class="auth-card__form-label">Email</label>
+            <div class="auth-card__form-group form-group">
+              <label for="login" class="auth-card__form-label form-label">Логін</label>
+              <input 
+                type="text" 
+                class="auth-card__form-control form-control" 
+                id="login" 
+                placeholder="Ваш логін"
+                required
+              >
+            </div>
+
+            <div class="auth-card__form-group form-group">
+              <label for="email" class="auth-card__form-label form-label">Email</label>
               <input 
                 type="email" 
-                class="auth-card__form-control" 
+                class="auth-card__form-control form-control" 
                 id="email" 
                 placeholder="your@email.com"
                 required
               >
             </div>
 
-            <div class="auth-card__form-group">
-              <label for="password" class="auth-card__form-label">Пароль</label>
+            <div class="auth-card__form-group form-group">
+              <label for="password" class="auth-card__form-label form-label">Пароль</label>
               <input 
                 type="password" 
-                class="auth-card__form-control" 
+                class="auth-card__form-control form-control" 
                 id="password" 
                 placeholder="••••••••"
                 required
@@ -72,11 +93,6 @@
 
       <!-- ##### Картка реєстрації ##### -->
       <div class="auth-card d-none" id="signupCard">
-        <div class="auth-card__header">
-          <h1>🏠 Розумний Будинок</h1>
-          <p>Реєстрація нового облікового запису</p>
-        </div>
-
         <div class="auth-card__body">
           <!-- Повідомлення про помилку -->
           <div id="signupErrorAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
@@ -92,44 +108,55 @@
 
           <!-- Форма реєстрації -->
           <form id="signupForm">
-            <div class="auth-card__form-group">
-              <label for="signupName" class="auth-card__form-label">Ім'я</label>
+            <div class="auth-card__form-group form-group">
+              <label for="signupLogin" class="auth-card__form-label form-label">Логін</label>
               <input 
                 type="text" 
-                class="auth-card__form-control" 
+                class="auth-card__form-control form-control" 
+                id="signupLogin" 
+                placeholder="Ваш логін"
+                required
+              >
+            </div>
+
+            <div class="auth-card__form-group form-group">
+              <label for="signupName" class="auth-card__form-label form-label">Ім'я</label>
+              <input 
+                type="text" 
+                class="auth-card__form-control form-control" 
                 id="signupName" 
                 placeholder="Ваше ім'я"
                 required
               >
             </div>
 
-            <div class="auth-card__form-group">
-              <label for="signupEmail" class="auth-card__form-label">Email</label>
+            <div class="auth-card__form-group form-group">
+              <label for="signupEmail" class="auth-card__form-label form-label">Email</label>
               <input 
                 type="email" 
-                class="auth-card__form-control" 
+                class="auth-card__form-control form-control" 
                 id="signupEmail" 
                 placeholder="your@email.com"
                 required
               >
             </div>
 
-            <div class="auth-card__form-group">
-              <label for="signupPassword" class="auth-card__form-label">Пароль</label>
+            <div class="auth-card__form-group form-group">
+              <label for="signupPassword" class="auth-card__form-label form-label">Пароль</label>
               <input 
                 type="password" 
-                class="auth-card__form-control" 
+                class="auth-card__form-control form-control" 
                 id="signupPassword" 
                 placeholder="••••••••"
                 required
               >
             </div>
 
-            <div class="auth-card__form-group">
-              <label for="signupPasswordConfirm" class="auth-card__form-label">Підтвердіть пароль</label>
+            <div class="auth-card__form-group form-group">
+              <label for="signupPasswordConfirm" class="auth-card__form-label form-label">Підтвердіть пароль</label>
               <input 
                 type="password" 
-                class="auth-card__form-control" 
+                class="auth-card__form-control form-control" 
                 id="signupPasswordConfirm" 
                 placeholder="••••••••"
                 required
@@ -159,11 +186,6 @@
 
       <!-- ##### Картка відновлення пароля ##### -->
       <div class="auth-card d-none" id="restorePasswordCard">
-        <div class="auth-card__header">
-          <h1>🏠 Розумний Будинок</h1>
-          <p>Відновлення пароля</p>
-        </div>
-
         <div class="auth-card__body">
           <!-- Повідомлення про помилку -->
           <div id="restoreErrorAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
@@ -181,11 +203,11 @@
 
           <!-- Форма відновлення пароля -->
           <form id="restorePasswordForm">
-            <div class="auth-card__form-group">
-              <label for="restoreEmail" class="auth-card__form-label">Email</label>
+            <div class="auth-card__form-group form-group">
+              <label for="restoreEmail" class="auth-card__form-label form-label">Email</label>
               <input 
                 type="email" 
-                class="auth-card__form-control" 
+                class="auth-card__form-control form-control" 
                 id="restoreEmail" 
                 placeholder="your@email.com"
                 required

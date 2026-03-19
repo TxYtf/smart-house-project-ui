@@ -5,21 +5,21 @@ let locations = [];
 let devices = [];
 
 // Завантажуємо дані з JSON файлів
-async function loadData() {
-  try {
-    const locationsResponse = await fetch('./data/locations.json');
-    locations = await locationsResponse.json();
+// async function loadData() {
+//   try {
+//     const locationsResponse = await fetch('./data/locations.json');
+//     locations = await locationsResponse.json();
     
-    const devicesResponse = await fetch('./data/devices.json');
-    devices = await devicesResponse.json();
+//     const devicesResponse = await fetch('./data/devices.json');
+//     devices = await devicesResponse.json();
     
-    // Ініціалізуємо UI після завантаження даних
-    renderLocations();
-    renderDevicesByLocation(locations[0]);
-  } catch (error) {
-    console.error('Помилка при завантаженні даних:', error);
-  }
-}
+//     // Ініціалізуємо UI після завантаження даних
+//     renderLocations();
+//     renderDevicesByLocation(locations[0]);
+//   } catch (error) {
+//     console.error('Помилка при завантаженні даних:', error);
+//   }
+// }
 
 // Створюємо словник конструкторів для легкого створення пристроїв за типом
 const deviceConstructors = Device.deviceClasses.reduce((acc, cls) => {
@@ -46,6 +46,7 @@ function renderLocations() {
 
 // Рендеримо пристрої, дозволені для вибраної локації
 function renderDevicesByLocation(selectedLocation) {
+  const t = i18n[currentLang];
   deviceSelect.disabled = !selectedLocation;
   deviceSelect.innerHTML = "";
 
@@ -57,11 +58,12 @@ function renderDevicesByLocation(selectedLocation) {
   // якщо нічого не знайдено
   if (allowedDevices.length === 0) {
     const option = document.createElement("option");
-    option.textContent = "Немає доступних пристроїв";
+    //option.textContent = "Немає доступних пристроїв";
+    option.textContent = t.noDevices;  // ← переклад
     option.disabled = true;
     deviceSelect.appendChild(option);
     return;
-  }
+  } 
 
   // додаємо пристрої у список
   allowedDevices.forEach(device => {
@@ -133,17 +135,37 @@ function fillCardBasicInfo(card, device) {
 
 // Заповнюємо поля інтеграції
 function fillIntegrationFields(card, device) {
+  // card.querySelector('.integration-ip').value = device.integration?.ip || '';
+  // card.querySelector('.integration-protocol').value = device.integration?.protocol || '';
+  // card.querySelector('.integration-deviceId').value = device.integration?.deviceId || '';
+  // card.querySelector('.integration-apiKey').value = device.integration?.apiKey || '';
+  const t = i18n[currentLang];
+
+  // Лейбли
+  card.querySelector('.integration-ip-label').textContent = t.integrationIpLabel;
+  card.querySelector('.integration-protocol-label').textContent = t.integrationProtocolLabel;
+  card.querySelector('.integration-deviceid-label').textContent = t.integrationDeviceIdLabel;
+  card.querySelector('.integration-apikey-label').textContent = t.integrationApiKeyLabel;
+
+  // Опції протоколів
+  const protocolSelect = card.querySelector('.integration-protocol');
+  protocolSelect.querySelectorAll('option').forEach(option => {
+    option.textContent = t.protocols[option.value];
+  });
+
+  // Значення полів
   card.querySelector('.integration-ip').value = device.integration?.ip || '';
-  card.querySelector('.integration-protocol').value = device.integration?.protocol || '';
+  protocolSelect.value = device.integration?.protocol || 'WebSocket';
   card.querySelector('.integration-deviceId').value = device.integration?.deviceId || '';
   card.querySelector('.integration-apiKey').value = device.integration?.apiKey || '';
 }
 
 // Налаштовуємо кнопку Toggle
 function setupToggleButton(card, device) {
+  const t = i18n[currentLang];
   const toggleBtn = card.querySelector('.toggle-btn');
-  toggleBtn.textContent = device.isOn ? "Вимкнути" : "Увімкнути";
-  toggleBtn.addEventListener("click", () => {
+  toggleBtn.textContent = device.isOn ? t.toggleOff : t.toggleOn;  // ← переклад
+  toggleBtn.addEventListener('click', () => {
     house.devices.find(d => d.id === device.id).toggle();
     renderDevices();
   });
@@ -152,6 +174,7 @@ function setupToggleButton(card, device) {
 // Налаштовуємо кнопку Remove
 function setupRemoveButton(card, device) {
   const removeBtn = card.querySelector('.remove-btn');
+  removeBtn.textContent = i18n[currentLang].removeBtn;
   removeBtn.addEventListener("click", () => {
     house.removeDevice(device.id);
     renderDevices();
@@ -161,6 +184,7 @@ function setupRemoveButton(card, device) {
 // Налаштовуємо кнопку Integration
 function setupIntegrationButton(card, integrationId) {
   const integrationBtn = card.querySelector('.integration-btn');
+  integrationBtn.textContent = i18n[currentLang].integrationBtn;
   integrationBtn.setAttribute('data-bs-target', `#${integrationId}`);
   integrationBtn.setAttribute('aria-controls', `${integrationId}`);
 }
@@ -168,12 +192,13 @@ function setupIntegrationButton(card, integrationId) {
 // Налаштовуємо кнопку Save Integration
 function setupSaveIntegrationButton(card, device) {
   const saveBtn = card.querySelector(".save-integration");
+  saveBtn.textContent = i18n[currentLang].saveIntegrationBtn;
   saveBtn.addEventListener("click", () => {
     device.integration.ip = card.querySelector(".integration-ip").value.trim();
     device.integration.protocol = card.querySelector(".integration-protocol").value;
     device.integration.deviceId = card.querySelector(".integration-deviceId").value.trim();
     device.integration.apiKey = card.querySelector(".integration-apiKey").value.trim();
-    alert(`Інтеграційні налаштування для "${device.name}" збережено.`);
+    alert(i18n[currentLang].integrationSaved(device.name));  // ← переклад
   });
 }
 
@@ -220,30 +245,32 @@ function updateRegulatorState(slider, label, device) {
 
 // Налаштовуємо кнопки для WindowBlind
 function setupWindowBlindButtons(card, device) {
-  const openBtn = document.createElement("button");
-  openBtn.textContent = "Підняти";
-  openBtn.className = "btn btn-sm btn-info mt-2";
-  openBtn.addEventListener("click", () => {
+  const t = i18n[currentLang];
+  const openBtn = document.createElement('button');
+  openBtn.textContent = t.blindUp;  // ← переклад
+  openBtn.className = 'btn btn-sm btn-info mt-2';
+  openBtn.addEventListener('click', () => {
     device.setDown(false);
     renderDevices();
   });
-  
-  const closeBtn = document.createElement("button");
-  closeBtn.textContent = "Опустити";
-  closeBtn.className = "btn btn-sm btn-info mt-2 ms-1";
-  closeBtn.addEventListener("click", () => {
+
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = t.blindDown;  // ← переклад
+  closeBtn.className = 'btn btn-sm btn-info mt-2 ms-1';
+  closeBtn.addEventListener('click', () => {
     device.setDown(true);
     renderDevices();
   });
-  
+
   card.querySelector('.specific-buttons').appendChild(openBtn);
   card.querySelector('.specific-buttons').appendChild(closeBtn);
 }
 
 // Налаштовуємо кнопки для TV
 function setupTVButtons(card, device) {
+  const t = i18n[currentLang];
   const prevBtn = document.createElement("button");
-  prevBtn.textContent = "Канал --";
+  prevBtn.textContent = t.prevChannel;  // ← переклад
   prevBtn.className = "btn btn-sm btn-warning mt-2 card-specific__btn";
   prevBtn.addEventListener("click", () => {
     device.prevChannel();
@@ -251,7 +278,7 @@ function setupTVButtons(card, device) {
   });
   
   const nextBtn = document.createElement("button");
-  nextBtn.textContent = "Канал ++";
+  nextBtn.textContent = t.nextChannel;  // ← переклад
   nextBtn.className = "btn btn-sm btn-warning mt-2 ms-1 card-specific__btn";
   nextBtn.addEventListener("click", () => {
     device.nextChannel();
@@ -277,7 +304,13 @@ function setupTVButtons(card, device) {
 // ============== /Створюємо картку пристрою ===============
 
 // Запускаємо завантаження даних при завантаженні сторінки
-document.addEventListener('DOMContentLoaded', loadData);
+document.addEventListener('DOMContentLoaded', () => {
+  applyTranslations(currentLang);
+  // Оновлюємо кнопку мови відповідно до збереженої мови
+  langBtn.textContent = currentLang === 'en' ? '🌐 EN' : '🌐 UA';
+  loadData();
+  initializeApp();
+});
 
 // Коли змінюється локація
 locationSelect.addEventListener("change", () => {
@@ -310,6 +343,32 @@ async function initializeApp() {
 
   await loadSmartHouses();
 }
+
+document.getElementById('userName').textContent = localStorage.getItem('login') || 'Гість';
+
+const langBtn = document.getElementById('langBtn');
+const langMenu = document.getElementById('langMenu');
+
+langBtn.addEventListener('click', () => {
+  langMenu.classList.toggle('d-none');
+});
+
+document.querySelectorAll('.app-navbar__lang-item').forEach(item => {
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
+    const lang = e.target.dataset.lang;
+    langBtn.textContent = e.target.textContent;
+    langMenu.classList.add('d-none');
+    // тут логіка зміни мови
+  });
+});
+
+// Закриваємо меню при кліку поза ним
+document.addEventListener('click', (e) => {
+  if (!langDropdown.contains(e.target)) {
+    langMenu.classList.add('d-none');
+  }
+});
 
 // Завантажуємо список смарт будинків
 async function loadSmartHouses() {
@@ -350,4 +409,8 @@ async function selectSmartHouse(houseId, houseName) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', initializeApp);
+// Налаштовуємо кнопку Logout
+document.getElementById('logoutBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  Auth.logout();
+});
