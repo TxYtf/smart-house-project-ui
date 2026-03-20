@@ -4,29 +4,6 @@
 let locations = [];
 let devices = [];
 
-// Завантажуємо дані з JSON файлів
-// async function loadData() {
-//   try {
-//     const locationsResponse = await fetch('./data/locations.json');
-//     locations = await locationsResponse.json();
-    
-//     const devicesResponse = await fetch('./data/devices.json');
-//     devices = await devicesResponse.json();
-    
-//     // Ініціалізуємо UI після завантаження даних
-//     renderLocations();
-//     renderDevicesByLocation(locations[0]);
-//   } catch (error) {
-//     console.error('Помилка при завантаженні даних:', error);
-//   }
-// }
-
-// Створюємо словник конструкторів для легкого створення пристроїв за типом
-const deviceConstructors = Device.deviceClasses.reduce((acc, cls) => {
-  acc[cls.name] = cls;
-  return acc;
-}, {});
-
 const house = new SmartHouse();
 const devicesContainer = document.getElementById("devicesContainer");
 
@@ -44,12 +21,43 @@ function renderLocations() {
   });
 }
 
+// Отримуємо відформатований список пристроїв
+function getSortedDevices() {
+  const sortValue = document.getElementById('sortSelect').value;
+  const devicesCopy = [...house.devices];
+
+  switch (sortValue) {
+    case 'location':
+      return devicesCopy.sort((a, b) => {
+        const locA = locations[a.location] || '';
+        const locB = locations[b.location] || '';
+        return locA.localeCompare(locB);
+      });
+    case 'name':
+      return devicesCopy.sort((a, b) => a.name.localeCompare(b.name));
+    case 'type':
+      return devicesCopy.sort((a, b) => {
+        const typeA = a.type || '';
+        const typeB = b.type || '';
+        return typeA.localeCompare(typeB);
+      });
+    case 'on':
+      return devicesCopy.sort((a, b) => b.isOn - a.isOn);
+    case 'off':
+      return devicesCopy.sort((a, b) => a.isOn - b.isOn);
+
+    default:
+      return devicesCopy;
+  }
+}
+
 // Рендеримо пристрої, дозволені для вибраної локації
 function renderDevicesByLocation(selectedLocation) {
-  const t = i18n[currentLang];
+  const t = i18n[appState.lang];
   deviceSelect.disabled = !selectedLocation;
   deviceSelect.innerHTML = "";
 
+  const selectedIndex = locations.indexOf(selectedLocation);
   // фільтруємо пристрої, дозволені для локації
   const allowedDevices = devices.filter(device =>
     device.location.includes(selectedLocation)
@@ -77,7 +85,7 @@ function renderDevicesByLocation(selectedLocation) {
 // Рендеримо картки пристроїв
 function renderDevices() {
   devicesContainer.innerHTML = "";
-  house.devices.forEach(device => {
+  getSortedDevices().forEach(device => {
     const cardElement = createDeviceCard(device);
     devicesContainer.appendChild(cardElement);
   });
@@ -126,20 +134,20 @@ function createDeviceCard(device) {
 // Заповнюємо базові дані картки
 function fillCardBasicInfo(card, device) {
   const currentDevice = devices.find(dev => dev.type === device.type);
-  card.querySelector('.card-title').textContent = 
+  card.querySelector('.card-title').textContent =
     `${currentDevice ? currentDevice.name : device.type} ${device.extendedName || ''}`;
-  
-  card.querySelector('.card-text-content').textContent = device.location;
-  card.querySelector('.device-status').textContent = `[${device.getStatus()}]`;
+
+  card.querySelector('.card-text-content').textContent = locations[device.location];
+
+  const statusEl = card.querySelector('.device-status');
+  const statusText = formatStatus(device.getStatus());
+  statusEl.textContent = `[${statusText}]`;
+  statusEl.className = `device-status ${device.isOn ? 'device-status__on' : 'device-status__off'}`;
 }
 
 // Заповнюємо поля інтеграції
 function fillIntegrationFields(card, device) {
-  // card.querySelector('.integration-ip').value = device.integration?.ip || '';
-  // card.querySelector('.integration-protocol').value = device.integration?.protocol || '';
-  // card.querySelector('.integration-deviceId').value = device.integration?.deviceId || '';
-  // card.querySelector('.integration-apiKey').value = device.integration?.apiKey || '';
-  const t = i18n[currentLang];
+  const t = i18n[appState.lang];
 
   // Лейбли
   card.querySelector('.integration-ip-label').textContent = t.integrationIpLabel;
@@ -162,7 +170,7 @@ function fillIntegrationFields(card, device) {
 
 // Налаштовуємо кнопку Toggle
 function setupToggleButton(card, device) {
-  const t = i18n[currentLang];
+  const t = i18n[appState.lang];
   const toggleBtn = card.querySelector('.toggle-btn');
   toggleBtn.textContent = device.isOn ? t.toggleOff : t.toggleOn;  // ← переклад
   toggleBtn.addEventListener('click', () => {
@@ -174,7 +182,7 @@ function setupToggleButton(card, device) {
 // Налаштовуємо кнопку Remove
 function setupRemoveButton(card, device) {
   const removeBtn = card.querySelector('.remove-btn');
-  removeBtn.textContent = i18n[currentLang].removeBtn;
+  removeBtn.textContent = i18n[appState.lang].removeBtn;
   removeBtn.addEventListener("click", () => {
     house.removeDevice(device.id);
     renderDevices();
@@ -184,7 +192,7 @@ function setupRemoveButton(card, device) {
 // Налаштовуємо кнопку Integration
 function setupIntegrationButton(card, integrationId) {
   const integrationBtn = card.querySelector('.integration-btn');
-  integrationBtn.textContent = i18n[currentLang].integrationBtn;
+  integrationBtn.textContent = i18n[appState.lang].integrationBtn;
   integrationBtn.setAttribute('data-bs-target', `#${integrationId}`);
   integrationBtn.setAttribute('aria-controls', `${integrationId}`);
 }
@@ -192,13 +200,13 @@ function setupIntegrationButton(card, integrationId) {
 // Налаштовуємо кнопку Save Integration
 function setupSaveIntegrationButton(card, device) {
   const saveBtn = card.querySelector(".save-integration");
-  saveBtn.textContent = i18n[currentLang].saveIntegrationBtn;
+  saveBtn.textContent = i18n[appState.lang].saveIntegrationBtn;
   saveBtn.addEventListener("click", () => {
     device.integration.ip = card.querySelector(".integration-ip").value.trim();
     device.integration.protocol = card.querySelector(".integration-protocol").value;
     device.integration.deviceId = card.querySelector(".integration-deviceId").value.trim();
     device.integration.apiKey = card.querySelector(".integration-apiKey").value.trim();
-    alert(i18n[currentLang].integrationSaved(device.name));  // ← переклад
+    alert(i18n[appState.lang].integrationSaved(device.name));  // ← переклад
   });
 }
 
@@ -215,14 +223,15 @@ function setupVolumeRegulator(card, device, div) {
   regulatorSlider.max = device.volumeRegulator.volumeMax;
   regulatorSlider.value = device.volumeRegulator.volume;
   regulatorDisplay.textContent = device.volumeRegulator.muted ? "(X)" : device.volumeRegulator.volume;
-  regulatorLabel.textContent = device.volumeRegulator.name;
+  regulatorLabel.textContent = i18n[appState.lang].regulatorNames[device.volumeRegulator.type];
 
   updateRegulatorState(regulatorSlider, regulatorLabel, device);
 
   regulatorSlider.addEventListener("input", () => {
     device.setVolume(parseInt(regulatorSlider.value));
     regulatorDisplay.textContent = device.volumeRegulator.volume;
-    div.querySelector('.device-status').textContent = `[${device.getStatus()}]`;
+    div.querySelector('.device-status').textContent =
+      `[${formatStatus(device.getStatus())}]`;
   });
 }
 
@@ -245,7 +254,7 @@ function updateRegulatorState(slider, label, device) {
 
 // Налаштовуємо кнопки для WindowBlind
 function setupWindowBlindButtons(card, device) {
-  const t = i18n[currentLang];
+  const t = i18n[appState.lang];
   const openBtn = document.createElement('button');
   openBtn.textContent = t.blindUp;  // ← переклад
   openBtn.className = 'btn btn-sm btn-info mt-2';
@@ -268,7 +277,7 @@ function setupWindowBlindButtons(card, device) {
 
 // Налаштовуємо кнопки для TV
 function setupTVButtons(card, device) {
-  const t = i18n[currentLang];
+  const t = i18n[appState.lang];
   const prevBtn = document.createElement("button");
   prevBtn.textContent = t.prevChannel;  // ← переклад
   prevBtn.className = "btn btn-sm btn-warning mt-2 card-specific__btn";
@@ -305,16 +314,25 @@ function setupTVButtons(card, device) {
 
 // Запускаємо завантаження даних при завантаженні сторінки
 document.addEventListener('DOMContentLoaded', () => {
-  applyTranslations(currentLang);
+  applyTranslations(appState.lang);
   // Оновлюємо кнопку мови відповідно до збереженої мови
-  langBtn.textContent = currentLang === 'en' ? '🌐 EN' : '🌐 UA';
+  langBtn.textContent = appState.lang === 'en' ? '🌐 EN' : '🌐 UA';
   loadData();
   initializeApp();
 });
 
+// Слухач для сортування
+document.getElementById('sortSelect').addEventListener('change', renderDevices);
+
 // Коли змінюється локація
 locationSelect.addEventListener("change", () => {
+  appState.selectedLocationIndex = locationSelect.selectedIndex; // ← зберігаємо індекс
   renderDevicesByLocation(locationSelect.value);
+  document.getElementById('extendedName').value = ''; // ← очищаємо розширену назву при зміні локації
+});
+
+deviceSelect.addEventListener('change', () => {
+  document.getElementById('extendedName').value = ''; // ← очищаємо розширену назву при зміні типу пристрою
 });
 
 // Коли змінюється тип пристрою
@@ -322,10 +340,10 @@ document.getElementById("addDeviceBtn").onclick = () => {
   const type = document.getElementById("deviceType").value;
   const name = deviceSelect.options[deviceSelect.selectedIndex].text.trim();
   const extendedName = document.getElementById("extendedName").value.trim();
-  const location = document.getElementById("deviceLocation").value;
+  const locationIndex = document.getElementById("deviceLocation").selectedIndex;
 
-  const Constructor = deviceConstructors[type] || Device;
-  const device = new Constructor(name, extendedName, type, location);
+  const Constructor = Device.getClassForType(type);
+  const device = new Constructor(name, extendedName, type, locationIndex);
 
   house.addDevice(device);
   renderDevices();
@@ -399,6 +417,8 @@ function renderSmartHousesMenu(smartHouses) {
 
 // Вибираємо смарт будинок і завантажуємо його пристрої
 async function selectSmartHouse(houseId, houseName) {
+  appState.currentHouseId = houseId;
+  appState.currentHouseName = houseName;
   document.getElementById('currentHouseName').textContent = houseName;
 
   try {

@@ -1,30 +1,20 @@
+const appState = {
+  lang: localStorage.getItem('lang') || 'uk',
+  selectedLocationIndex: 0, // ← індекс вибраного розташування пристроїв
+  currentHouseId: null,
+  currentHouseName: null
+};
+
 const i18n = {
   uk: {
-    models: {
-      on: 'ON',
-      off: 'OFF',
-      Light: {
-        regulatorName: 'Яскравість:',
-        status: (vol) => `ON, яскравість: ${vol}`
-      },
-      HeatingBoiler: {
-        regulatorName: 'Рівень опалення:',
-        status: (vol) => `ON, рівень опалення: ${vol}`
-      },
-      WindowBlind: {
-        regulatorName: 'Відкриття:',
-        fullyOpen: 'повністю відкриті',
-        fullyClosed: 'повністю закриті',
-        partiallyOpen: (vol) => `відкриті на ${vol}%`,
-        raised: 'підняті',
-        lowered: 'опущені, ',
-        status: (isDown, openVolume) => `ON, ${isDown ? 'опущені, ' : 'підняті'}${openVolume}`
-      },
-      TV: {
-        regulatorName: 'Гучність:',
-        status: (ch, vol) => `ON, ch: ${ch}, гучність: ${vol}`
-      }
-    },
+    on: 'ON',
+    off: 'OFF',
+    blindFullyOpen: 'повністю відкриті',
+    blindFullyClosed: 'повністю закриті',
+    blindPartiallyOpen: (vol) => `відкриті на ${vol}%`,
+    blindRaised: 'підняті',
+    blindLowered: 'опущені, ',
+    muted: 'Без звуку',  
     // Navbar
     brandName: 'Розумний Будинок',
     // Форма додавання
@@ -36,6 +26,20 @@ const i18n = {
     addComponentBtn: 'Додати компонент',
     // Список компонентів
     componentsTitle: 'Компоненти',
+    // Сортування
+    sortNone: 'Без сортування',
+    sortByLocation: 'За локацією',
+    sortByName: 'За назвою',
+    sortByType: 'За типом',
+    sortByOn: 'Спочатку увімкнені',
+    sortByOff: 'Спочатку вимкнені',
+    // Регулятори
+    regulatorNames: {
+      brightness:   'Яскравість:',
+      heatingLevel: 'Рівень опалення:',
+      openingLevel: 'Відкриття:',
+      volumeLevel:  'Гучність:'
+    },
     noDevices: 'Немає доступних пристроїв',
     // Картка пристрою
     toggleOn: 'Увімкнути',
@@ -71,31 +75,14 @@ const i18n = {
     menuTitle: 'Меню',
   },
   en: {
-    models: {
-      on: 'ON',
-      off: 'OFF',
-      Light: {
-        regulatorName: 'Brightness:',
-        status: (vol) => `ON, brightness: ${vol}`
-      },
-      HeatingBoiler: {
-        regulatorName: 'Heating level:',
-        status: (vol) => `ON, heating level: ${vol}`
-      },
-      WindowBlind: {
-        regulatorName: 'Opening:',
-        fullyOpen: 'fully open',
-        fullyClosed: 'fully closed',
-        partiallyOpen: (vol) => `open at ${vol}%`,
-        raised: 'raised',
-        lowered: 'lowered, ',
-        status: (isDown, openVolume) => `ON, ${isDown ? 'lowered, ' : 'raised'}${openVolume}`
-      },
-      TV: {
-        regulatorName: 'Volume:',
-        status: (ch, vol) => `ON, ch: ${ch}, volume: ${vol}`
-      }
-    },
+    on: 'ON',
+    off: 'OFF',
+    blindFullyOpen: 'fully open',
+    blindFullyClosed: 'fully closed',
+    blindPartiallyOpen: (vol) => `open at ${vol}%`,
+    blindRaised: 'raised',
+    blindLowered: 'lowered, ',
+    muted: 'Muted',
     // Navbar
     brandName: 'Smart House',
     // Форма додавання
@@ -107,7 +94,21 @@ const i18n = {
     addComponentBtn: 'Add Component',
     // Список компонентів
     componentsTitle: 'Components',
-    noDevices: 'No available devices',
+    // Сортування
+    sortNone: 'No sorting',
+    sortByLocation: 'By location',
+    sortByName: 'By name',
+    sortByType: 'By type',
+    sortByOn: 'On first',
+    sortByOff: 'Off first',
+    // Регулятори
+    regulatorNames: {
+      brightness:   'Brightness:',
+      heatingLevel: 'Heating level:',
+      openingLevel: 'Opening:',
+      volumeLevel:  'Volume:'
+    },
+    noDevices: 'No devices available',
     // Картка пристрою
     toggleOn: 'Turn On',
     toggleOff: 'Turn Off',
@@ -134,7 +135,7 @@ const i18n = {
     menuHome: 'Home',
     menuSettings: 'Settings',
     menuSave: 'Save',
-    menuSaveAs: 'Save As..',
+    menuSaveAs: 'Save As',
     menuMyHouses: 'My Smart Houses:',
     menuHelp: 'Help',
     menuLogout: 'Logout',
@@ -142,8 +143,6 @@ const i18n = {
     menuTitle: 'Menu',
   }
 };
-
-let currentLang = localStorage.getItem('lang') || 'uk';
 
 // Застосовуємо переклад до статичних елементів
 function applyTranslations(lang) {
@@ -165,8 +164,8 @@ function applyTranslations(lang) {
 // Завантажуємо дані з JSON файлів відповідно до мови
 async function loadData() {
   try {
-    const locationsFile = currentLang === 'en' ? './data/locations_en.json' : './data/locations.json';
-    const devicesFile = currentLang === 'en' ? './data/devices_en.json' : './data/devices.json';
+    const locationsFile = appState.lang === 'en' ? './data/locations_en.json' : './data/locations.json';
+    const devicesFile = appState.lang === 'en' ? './data/devices_en.json' : './data/devices.json';
 
     const [locationsResponse, devicesResponse] = await Promise.all([
       fetch(locationsFile),
@@ -177,7 +176,8 @@ async function loadData() {
     devices = await devicesResponse.json();
 
     renderLocations();
-    renderDevicesByLocation(locations[0]);
+    locationSelect.selectedIndex = appState.selectedLocationIndex; // ← відновлюємо вибір
+    renderDevicesByLocation(locations[appState.selectedLocationIndex]); // ← правильна локація
     renderDevices();
   } catch (error) {
     console.error('Помилка при завантаженні даних:', error);
@@ -186,7 +186,7 @@ async function loadData() {
 
 // Змінюємо мову
 async function changeLanguage(lang) {
-  currentLang = lang;
+  appState.lang = lang;
   localStorage.setItem('lang', lang);
   applyTranslations(lang);
   await loadData();

@@ -7,6 +7,8 @@
   --color-text: #333;
   --color-muted: #666;
   --color-border: #ddd;
+  --color-on: #107213;
+  --color-off: #dc1d30;
   --radius: 0.75rem;
   --radius-sm: 0.5rem;
   --shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
@@ -290,6 +292,14 @@ body {
 .device-card__location {
   color: var(--color-muted);
   font-size: 0.9rem;
+}
+
+.device-status__off {
+  color: var(--color-off);
+}
+
+.device-status__on {
+  color: var(--color-on);
 }
 
 .device-card__specific {
