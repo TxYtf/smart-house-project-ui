@@ -269,9 +269,10 @@ body {
   background: var(--color-white);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
-  min-height: 300px;
+  /* min-height: 300px; */
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
 }
 
 .device-card:hover {
